@@ -1,0 +1,335 @@
+
+module work_scheduler(
+//work schreluder
+dispatch2cu_wf_dispatch,
+      dispatch2cu_wf_tag_dispatch,
+      dispatch2cu_start_pc_dispatch,
+      dispatch2cu_vgpr_base_dispatch,
+      dispatch2cu_sgpr_base_dispatch,
+      dispatch2cu_lds_base_dispatch,
+      dispatch2cu_wf_size_dispatch,
+      dispatch2cu_wg_wf_count,
+      mem2lsu_rd_data,
+      mem2lsu_tag_resp,
+      mem2lsu_ack,
+      buff2fetchwave_ack,
+      buff2wave_instr,
+      buff2wave_tag,
+      cu2dispatch_wf_tag_done,
+      cu2dispatch_wf_done,
+      lsu2mem_rd_en,
+      lsu2mem_wr_en,
+      lsu2mem_addr,
+      lsu2mem_wr_data,
+      lsu2mem_tag_req,
+      lsu2mem_wr_mask,
+      lsu2mem_gm_or_lds,
+      fetch2buff_rd_en,
+      fetch2buff_addr,
+      fetch2buff_tag,
+      simd0_2tracemon_retire_pc,
+      simd1_2tracemon_retire_pc,
+      simd2_2tracemon_retire_pc,
+      simd3_2tracemon_retire_pc,
+      simf0_2tracemon_retire_pc,
+      simf1_2tracemon_retire_pc,
+      simf2_2tracemon_retire_pc,
+      simf3_2tracemon_retire_pc,
+      salu2tracemon_retire_pc,
+      salu2tracemon_exec_word_sel,
+      salu2tracemon_vcc_word_sel,
+      lsu2tracemon_retire_pc,
+      issue2tracemon_barrier_retire_en,
+      issue2tracemon_barrier_retire_wf_bitmap,
+      issue2tracemon_barrier_retire_pc,
+      issue2tracemon_waitcnt_retire_en,
+      issue2tracemon_waitcnt_retire_wfid,
+      issue2tracemon_waitcnt_retire_pc,
+      wave2decode_instr_valid,
+      wave2decode_sgpr_base,
+      wave2decode_vgpr_base,
+      wave2decode_lds_base,
+      wave2decode_wfid,
+      salu2sgpr_instr_done,
+      salu2sgpr_instr_done_wfid,
+      salu2exec_wr_exec_en,
+      salu2exec_wr_exec_value,
+      salu2exec_wr_vcc_en,
+      salu2exec_wr_vcc_value,
+      salu2exec_wr_scc_en,
+      salu2exec_wr_scc_value,
+      salu2sgpr_dest_wr_en,
+      salu2sgpr_dest_addr,
+      salu2sgpr_dest_data,
+      simd0_2vgpr_instr_done,
+      simd0_2vgpr_instr_done_wfid,
+      simd1_2vgpr_instr_done,
+      simd1_2vgpr_instr_done_wfid,
+      simd2_2vgpr_instr_done,
+      simd2_2vgpr_instr_done_wfid,
+      simd3_2vgpr_instr_done,
+      simd3_2vgpr_instr_done_wfid,
+      simd0_2exec_wr_vcc_en,
+      simd0_2exec_wr_vcc_value,
+      simd0_2vgpr_wr_en,
+      simd0_2vgpr_dest_addr,
+      simd0_2vgpr_dest_data,
+      simd0_2vgpr_wr_mask,
+      simd1_2exec_wr_vcc_en,
+      simd1_2exec_wr_vcc_value,
+      simd1_2vgpr_wr_en,
+      simd1_2vgpr_dest_addr,
+      simd1_2vgpr_dest_data,
+      simd1_2vgpr_wr_mask,
+      simd2_2exec_wr_vcc_en,
+      simd2_2exec_wr_vcc_value,
+      simd2_2vgpr_wr_en,
+      simd2_2vgpr_dest_addr,
+      simd2_2vgpr_dest_data,
+      simd2_2vgpr_wr_mask,
+      simd3_2exec_wr_vcc_en,
+      simd3_2exec_wr_vcc_value,
+      simd3_2vgpr_wr_en,
+      simd3_2vgpr_dest_addr,
+      simd3_2vgpr_dest_data,
+      simd3_2vgpr_wr_mask,
+      simf0_2vgpr_instr_done,
+      simf0_2vgpr_instr_done_wfid,
+      simf1_2vgpr_instr_done,
+      simf1_2vgpr_instr_done_wfid,
+      simf2_2vgpr_instr_done,
+      simf2_2vgpr_instr_done_wfid,
+      simf3_2vgpr_instr_done,
+      simf3_2vgpr_instr_done_wfid,
+      simf0_2exec_wr_vcc_en,
+      simf0_2exec_wr_vcc_value,
+      simf0_2vgpr_wr_en,
+      simf0_2vgpr_dest_addr,
+      simf0_2vgpr_dest_data,
+      simf0_2vgpr_wr_mask,
+      simf1_2exec_wr_vcc_en,
+      simf1_2exec_wr_vcc_value,
+      simf1_2vgpr_wr_en,
+      simf1_2vgpr_dest_addr,
+      simf1_2vgpr_dest_data,
+      simf1_2vgpr_wr_mask,
+      simf2_2exec_wr_vcc_en,
+      simf2_2exec_wr_vcc_value,
+      simf2_2vgpr_wr_en,
+      simf2_2vgpr_dest_addr,
+      simf2_2vgpr_dest_data,
+      simf2_2vgpr_wr_mask,
+      simf3_2exec_wr_vcc_en,
+      simf3_2exec_wr_vcc_value,
+      simf3_2vgpr_wr_en,
+      simf3_2vgpr_dest_addr,
+      simf3_2vgpr_dest_data,
+      simf3_2vgpr_wr_mask,
+      simd0_2sgpr_wr_addr,
+      simd0_2sgpr_wr_en,
+      simd0_2sgpr_wr_data,
+      simd1_2sgpr_wr_addr,
+      simd1_2sgpr_wr_en,
+      simd1_2sgpr_wr_data,
+      simd2_2sgpr_wr_addr,
+      simd2_2sgpr_wr_en,
+      simd2_2sgpr_wr_data,
+      simd3_2sgpr_wr_addr,
+      simd3_2sgpr_wr_en,
+      simd3_2sgpr_wr_data,
+      simf0_2sgpr_wr_addr,
+      simf0_2sgpr_wr_en,
+      simf0_2sgpr_wr_data,
+      simf1_2sgpr_wr_addr,
+      simf1_2sgpr_wr_en,
+      simf1_2sgpr_wr_data,
+      simf2_2sgpr_wr_addr,
+      simf2_2sgpr_wr_en,
+      simf2_2sgpr_wr_data,
+      simf3_2sgpr_wr_addr,
+      simf3_2sgpr_wr_en,
+      simf3_2sgpr_wr_data,
+      lsu2sgpr_instr_done,
+      lsu2sgpr_instr_done_wfid,
+      lsu2sgpr_dest_wr_en,
+      lsu2sgpr_dest_addr,
+      lsu2sgpr_dest_data,
+      lsu2vgpr_instr_done,
+      lsu2vgpr_dest_data,
+      lsu2vgpr_dest_addr,
+      lsu2vgpr_dest_wr_mask,
+      lsu2vgpr_instr_done_wfid,
+      lsu2vgpr_dest_wr_en,
+      issue2fetchwave_wf_done_en,
+      issue2fetchwave_wf_done_wf_id,
+      salu2fetchwaveissue_branch_wfid,
+      salu2fetchwaveissue_branch_en,
+      salu2fetchwaveissue_branch_taken,
+      salu2fetch_branch_pc_value,
+      rfa2execvgprsgpr_select_fu,
+      decode2tracemon_collinstr,
+      decode2tracemon_colldone,
+      decode2issue_valid,
+      decode2issue_instr_pc,
+      decode2issue_wfid,
+      lsu2tracemon_gm_or_lds,
+      fetch2tracemon_dispatch,
+      fetch2tracemon_wf_tag,
+      fetch2tracemon_new_wfid,
+      salu2exec_wr_m0_en,
+      salu2exec_wr_m0_value,
+      decode2issue_barrier
+);
+
+//inputs
+input dispatch2cu_wf_dispatch, mem2lsu_ack, buff2fetchwave_ack;
+input[3:0] dispatch2cu_wg_wf_count;
+input[5:0] dispatch2cu_wf_size_dispatch;
+input[6:0] mem2lsu_tag_resp;
+input[8:0] dispatch2cu_sgpr_base_dispatch;
+input[9:0] dispatch2cu_vgpr_base_dispatch;
+input[14:0] dispatch2cu_wf_tag_dispatch;
+input[15:0] dispatch2cu_lds_base_dispatch;
+input[31:0] dispatch2cu_start_pc_dispatch, buff2wave_instr;
+input[38:0] buff2wave_tag;
+input[8191:0] mem2lsu_rd_data;
+input cu2dispatch_wf_done0;
+input cu2dispatch_wf_done1;
+input cu2dispatch_wf_done2;
+input cu2dispatch_wf_done3;
+
+
+//dispach for CU 0
+output dispatch2cu_wf_dispatch0, mem2lsu_ack0, buff2fetchwave_ack0;
+output[3:0] dispatch2cu_wg_wf_count0;
+output[5:0] dispatch2cu_wf_size_dispatch0;
+output[6:0] mem2lsu_tag_resp0;
+output[8:0] dispatch2cu_sgpr_base_dispatch0;
+output[9:0] dispatch2cu_vgpr_base_dispatch0;
+output[14:0] dispatch2cu_wf_tag_dispatch0;
+output[15:0] dispatch2cu_lds_base_dispatch0;
+output[31:0] dispatch2cu_start_pc_dispatch0, buff2wave_instr0;
+output[38:0] buff2wave_tag0;
+output[8191:0] mem2lsu_rd_data0;
+//dispach for CU 1
+output dispatch2cu_wf_dispatch1, mem2lsu_ack1, buff2fetchwave_ack1;
+output[3:0] dispatch2cu_wg_wf_count1;
+output[5:0] dispatch2cu_wf_size_dispatch1;
+output[6:0] mem2lsu_tag_resp1;
+output[8:0] dispatch2cu_sgpr_base_dispatch1;
+output[9:0] dispatch2cu_vgpr_base_dispatch1;
+output[14:0] dispatch2cu_wf_tag_dispatch1;
+output[15:0] dispatch2cu_lds_base_dispatch1;
+output[31:0] dispatch2cu_start_pc_dispatch1, buff2wave_instr1;
+output[38:0] buff2wave_tag1;
+output[8191:0] mem2lsu_rd_data1;
+//dispach for CU 2
+// Dispatch to Compute Unit signals
+output dispatch2cu_wf_dispatch2, mem2lsu_ack2, buff2fetchwave_ack2;
+output [3:0]    dispatch2cu_wg_wf_count2;      // Workgroup/Wavefront count
+output [5:0]    dispatch2cu_wf_size_dispatch2;  // Wavefront size
+output [8:0]    dispatch2cu_sgpr_base_dispatch2;// Scalar GPU register base address
+output [9:0]    dispatch2cu_vgpr_base_dispatch2;// Vector GPU register base address
+output [14:0]   dispatch2cu_wf_tag_dispatch2;   // Wavefront tag
+output [15:0]   dispatch2cu_lds_base_dispatch2; // Local Data Store base address
+output [31:0]   dispatch2cu_start_pc_dispatch2; // Program Counter start address
+output [6:0]    mem2lsu_tag_resp2;             // Memory to LSU tag response
+output [8191:0] mem2lsu_rd_data2;              // Memory to LSU read data
+output [31:0]   buff2wave_instr2;              // Buffer to Wave instruction
+output [38:0]   buff2wave_tag2;                // Buffer to Wave tag
+//dispach for CU 3
+output dispatch2cu_wf_dispatch3, mem2lsu_ack3, buff2fetchwave_ack3;
+output [3:0]    dispatch2cu_wg_wf_count3;      // Workgroup/Wavefront count
+output [5:0]    dispatch2cu_wf_size_dispatch3;  // Wavefront size
+output [8:0]    dispatch2cu_sgpr_base_dispatch3;// Scalar GPU register base address
+output [9:0]    dispatch2cu_vgpr_base_dispatch3;// Vector GPU register base address
+output [14:0]   dispatch2cu_wf_tag_dispatch3;   // Wavefront tag
+output [15:0]   dispatch2cu_lds_base_dispatch3; // Local Data Store base address
+output [31:0]   dispatch2cu_start_pc_dispatch3; // Program Counter start address
+output [6:0]    mem2lsu_tag_resp3;             // Memory to LSU tag response
+output [8191:0] mem2lsu_rd_data3;              // Memory to LSU read data
+output [31:0]   buff2wave_instr3;              // Buffer to Wave instruction
+output [38:0]   buff2wave_tag3;                // Buffer to Wave tag
+output cu2dispatch_wf_done;
+integrer cu_livre;
+always @(*) begin
+
+    if (cu2dispatch_wf_done0 == 1'b0) begin
+    cu_livre <= 1;
+    end else if (cu2dispatch_wf_done1 == 1'b0 and not cu2dispatch_wf_done0 == 1'b0) begin
+    cu_livre <= 2;
+    end else if (cu2dispatch_wf_done2 == 1'b0 and not cu2dispatch_wf_done1 == 1'b0 and not cu2dispatch_wf_done0 == 1'b0) begin
+    cu_livre <= 3;
+    end else if (cu2dispatch_wf_done3 == 1'b0 and not cu2dispatch_wf_done2 == 1'b0 and not cu2dispatch_wf_done1 == 1'b0 and not cu2dispatch_wf_done0 == 1'b0) begin
+    cu_livre <= 4;
+    end else if (cu2dispatch_wf_done3 == 1'b1 and cu2dispatch_wf_done2 == 1'b1 and cu2dispatch_wf_done1 == 1'b1 and cu2dispatch_wf_done0 == 1'b1) begin
+    cu2dispatch_wf_done <= 1'b0;
+    else
+    cu2dispatch_wf_done <= 1'b1;
+    end
+
+    if (cu_livre == 1) begin
+    dispatch2cu_wf_dispatch0 <= dispatch2cu_wf_dispatch;
+    mem2lsu_ack0 <= mem2lsu_ack;
+    buff2fetchwave_ack0 <= buff2fetchwave_ack;
+    dispatch2cu_wg_wf_count0 <= dispatch2cu_wg_wf_count;
+    dispatch2cu_wf_size_dispatch0 <= dispatch2cu_wf_size_dispatch;
+    dispatch2cu_sgpr_base_dispatch0 <= dispatch2cu_sgpr_base_dispatch;
+    dispatch2cu_vgpr_base_dispatch0 <= dispatch2cu_vgpr_base_dispatch;
+    dispatch2cu_wf_tag_dispatch0 <= dispatch2cu_wf_tag_dispatch;
+    dispatch2cu_lds_base_dispatch0 <= dispatch2cu_lds_base_dispatch;
+    dispatch2cu_start_pc_dispatch0 <= dispatch2cu_start_pc_dispatch;
+    mem2lsu_tag_resp0 <= mem2lsu_tag_resp;
+    mem2lsu_rd_data0 <= mem2lsu_rd_data;
+    buff2wave_instr0 <= buff2wave_instr;
+    buff2wave_tag0 <= buff2wave_tag;
+    end else if (cu_livre == 2) begin
+    dispatch2cu_wf_dispatch1 <= dispatch2cu_wf_dispatch;
+    mem2lsu_ack1 <= mem2lsu_ack;
+    buff2fetchwave_ack1 <= buff2fetchwave_ack;
+    dispatch2cu_wg_wf_count1 <= dispatch2cu_wg_wf_count;
+    dispatch2cu_wf_size_dispatch1 <= dispatch2cu_wf_size_dispatch;
+    dispatch2cu_sgpr_base_dispatch1 <= dispatch2cu_sgpr_base_dispatch;
+    dispatch2cu_vgpr_base_dispatch1 <= dispatch2cu_vgpr_base_dispatch;
+    dispatch2cu_wf_tag_dispatch1 <= dispatch2cu_wf_tag_dispatch;
+    dispatch2cu_lds_base_dispatch1 <= dispatch2cu_lds_base_dispatch;
+    dispatch2cu_start_pc_dispatch1 <= dispatch2cu_start_pc_dispatch;
+    mem2lsu_tag_resp1 <= mem2lsu_tag_resp;
+    mem2lsu_rd_data1 <= mem2lsu_rd_data;
+    buff2wave_instr1 <= buff2wave_instr;
+    buff2wave_tag1 <= buff2wave_tag;
+    end else if (cu_livre == 3) begin
+    dispatch2cu_wf_dispatch2 <= dispatch2cu_wf_dispatch;
+    mem2lsu_ack2 <= mem2lsu_ack;
+    buff2fetchwave_ack2 <= buff2fetchwave_ack;
+    dispatch2cu_wg_wf_count2 <= dispatch2cu_wg_wf_count;
+    dispatch2cu_wf_size_dispatch2 <= dispatch2cu_wf_size_dispatch;
+    dispatch2cu_sgpr_base_dispatch2 <= dispatch2cu_sgpr_base_dispatch;
+    dispatch2cu_vgpr_base_dispatch2 <= dispatch2cu_vgpr_base_dispatch;
+    dispatch2cu_wf_tag_dispatch2 <= dispatch2cu_wf_tag_dispatch;
+    dispatch2cu_lds_base_dispatch2 <= dispatch2cu_lds_base_dispatch;
+    dispatch2cu_start_pc_dispatch2 <= dispatch2cu_start_pc_dispatch;
+    mem2lsu_tag_resp2 <= mem2lsu_tag_resp;
+    mem2lsu_rd_data2 <= mem2lsu_rd_data;
+    buff2wave_instr2 <= buff2wave_instr;
+    buff2wave_tag2 <= buff2wave_tag;
+    end else if (cu_livre == 4) begin
+        dispatch2cu_wf_dispatch3 <= dispatch2cu_wf_dispatch;
+        mem2lsu_ack3 <= mem2lsu_ack;
+        buff2fetchwave_ack3 <= buff2fetchwave_ack;
+        dispatch2cu_wg_wf_count3 <= dispatch2cu_wg_wf_count;
+        dispatch2cu_wf_size_dispatch3 <= dispatch2cu_wf_size_dispatch;
+        dispatch2cu_sgpr_base_dispatch3 <= dispatch2cu_sgpr_base_dispatch;
+        dispatch2cu_vgpr_base_dispatch3 <= dispatch2cu_vgpr_base_dispatch;
+        dispatch2cu_wf_tag_dispatch3 <= dispatch2cu_wf_tag_dispatch;
+        dispatch2cu_lds_base_dispatch3 <= dispatch2cu_lds_base_dispatch;
+        dispatch2cu_start_pc_dispatch3 <= dispatch2cu_start_pc_dispatch;
+        mem2lsu_tag_resp3 <= mem2lsu_tag_resp;
+        mem2lsu_rd_data3 <= mem2lsu_rd_data;
+        buff2wave_instr3 <= buff2wave_instr;
+        buff2wave_tag3 <= buff2wave_tag;
+    end
+end
+
+);
+endmodule

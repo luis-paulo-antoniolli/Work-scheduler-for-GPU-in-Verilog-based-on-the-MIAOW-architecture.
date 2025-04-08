@@ -1,0 +1,948 @@
+module Dispatcher(
+    //out das CUs
+    //CU 0
+input [3:0]lsu2mem_wr_en0,mem2lsu_ack1,mem2lsu_ack2,mem2lsu_ack3;
+
+input cu2dispatch_wf_done0, lsu2mem_gm_or_lds0, fetch2buff_rd_en0, issue2tracemon_barrier_retire_en0,
+      issue2tracemon_waitcnt_retire_en0, wave2decode_instr_valid0, salu2sgpr_instr_done0,
+      salu2exec_wr_exec_en0, salu2exec_wr_vcc_en0, salu2exec_wr_scc_en0, salu2exec_wr_scc_value0,
+      simd0_2vgpr_instr_done0, simd1_2vgpr_instr_done0, simd2_2vgpr_instr_done0,
+      simd3_2vgpr_instr_done0, simd0_2exec_wr_vcc_en0, simd0_2vgpr_wr_en0, simd1_2exec_wr_vcc_en0,
+      simd1_2vgpr_wr_en0, simd2_2exec_wr_vcc_en0, simd2_2vgpr_wr_en0, simd3_2exec_wr_vcc_en0,
+      simd3_2vgpr_wr_en0, simf0_2vgpr_instr_done0, simf1_2vgpr_instr_done0, simf2_2vgpr_instr_done0,
+      simf3_2vgpr_instr_done0, simf0_2exec_wr_vcc_en0, simf0_2vgpr_wr_en0, simf1_2exec_wr_vcc_en0,
+      simf1_2vgpr_wr_en0, simf2_2exec_wr_vcc_en0, simf2_2vgpr_wr_en0, simf3_2exec_wr_vcc_en0,
+      simf3_2vgpr_wr_en0, simd0_2sgpr_wr_en0, simd1_2sgpr_wr_en0, simd2_2sgpr_wr_en0,
+      simd3_2sgpr_wr_en0, simf0_2sgpr_wr_en0, simf1_2sgpr_wr_en0, simf2_2sgpr_wr_en0,
+      simf3_2sgpr_wr_en0, lsu2sgpr_instr_done0, lsu2vgpr_instr_done0, issue2fetchwave_wf_done_en0,
+      salu2fetchwaveissue_branch_en0, salu2fetchwaveissue_branch_taken0, decode2tracemon_colldone0,
+      decode2issue_valid0, lsu2tracemon_gm_or_lds0, fetch2tracemon_dispatch0,
+      salu2exec_wr_m0_en0, decode2issue_barrier0;
+input[1:0] salu2tracemon_exec_word_sel0, salu2tracemon_vcc_word_sel0,
+      salu2sgpr_dest_wr_en0;
+input[3:0] lsu2mem_rd_en0, lsu2sgpr_dest_wr_en0, lsu2vgpr_dest_wr_en0;
+input[5:0] issue2tracemon_waitcnt_retire_wfid0, wave2decode_wfid0, salu2sgpr_instr_done_wfid0,
+      simd0_2vgpr_instr_done_wfid0, simd1_2vgpr_instr_done_wfid0, simd2_2vgpr_instr_done_wfid0,
+      simd3_2vgpr_instr_done_wfid0, simf0_2vgpr_instr_done_wfid0, simf1_2vgpr_instr_done_wfid0,
+      simf2_2vgpr_instr_done_wfid0, simf3_2vgpr_instr_done_wfid0, lsu2sgpr_instr_done_wfid0,
+      lsu2vgpr_instr_done_wfid0, issue2fetchwave_wf_done_wf_id0, salu2fetchwaveissue_branch_wfid0,
+      decode2issue_wfid0, fetch2tracemon_new_wfid0;
+input[6:0] lsu2mem_tag_req0;
+input[8:0] wave2decode_sgpr_base0, salu2sgpr_dest_addr0, simd0_2sgpr_wr_addr0,
+      simd1_2sgpr_wr_addr0, simd2_2sgpr_wr_addr0, simd3_2sgpr_wr_addr0, simf0_2sgpr_wr_addr0,
+      simf1_2sgpr_wr_addr0, simf2_2sgpr_wr_addr0, simf3_2sgpr_wr_addr0, lsu2sgpr_dest_addr0;
+input[9:0] wave2decode_vgpr_base0, simd0_2vgpr_dest_addr0, simd1_2vgpr_dest_addr0,
+      simd2_2vgpr_dest_addr0, simd3_2vgpr_dest_addr0, simf0_2vgpr_dest_addr0,
+      simf1_2vgpr_dest_addr0, simf2_2vgpr_dest_addr0, simf3_2vgpr_dest_addr0,
+      lsu2vgpr_dest_addr0;
+input[14:0] cu2dispatch_wf_tag_done0, fetch2tracemon_wf_tag0;
+input[15:0] wave2decode_lds_base0, rfa2execvgprsgpr_select_fu0;
+input[31:0] fetch2buff_addr0, simd0_2tracemon_retire_pc0, simd1_2tracemon_retire_pc0,
+      simd2_2tracemon_retire_pc0, simd3_2tracemon_retire_pc0, simf0_2tracemon_retire_pc0,
+      simf1_2tracemon_retire_pc0, simf2_2tracemon_retire_pc0, simf3_2tracemon_retire_pc0,
+      salu2tracemon_retire_pc0, lsu2tracemon_retire_pc0, issue2tracemon_barrier_retire_pc0,
+      issue2tracemon_waitcnt_retire_pc0, salu2fetch_branch_pc_value0, decode2issue_instr_pc0,
+      salu2exec_wr_m0_value0;
+input[38:0] fetch2buff_tag0;
+input[39:0] issue2tracemon_barrier_retire_wf_bitmap0;
+input[63:0] lsu2mem_wr_mask0, salu2exec_wr_exec_value0, salu2exec_wr_vcc_value0,
+      salu2sgpr_dest_data0, simd0_2exec_wr_vcc_value0, simd0_2vgpr_wr_mask0,
+      simd1_2exec_wr_vcc_value0, simd1_2vgpr_wr_mask0, simd2_2exec_wr_vcc_value0,
+      simd2_2vgpr_wr_mask0, simd3_2exec_wr_vcc_value0, simd3_2vgpr_wr_mask0,
+      simf0_2exec_wr_vcc_value0, simf0_2vgpr_wr_mask0, simf1_2exec_wr_vcc_value0,
+      simf1_2vgpr_wr_mask0, simf2_2exec_wr_vcc_value0, simf2_2vgpr_wr_mask0,
+      simf3_2exec_wr_vcc_value0, simf3_2vgpr_wr_mask0, simd0_2sgpr_wr_data0,
+      simd1_2sgpr_wr_data0, simd2_2sgpr_wr_data0, simd3_2sgpr_wr_data0, simf0_2sgpr_wr_data0,
+      simf1_2sgpr_wr_data0, simf2_2sgpr_wr_data0, simf3_2sgpr_wr_data0, lsu2vgpr_dest_wr_mask0,
+      decode2tracemon_collinstr0;
+input[127:0] lsu2sgpr_dest_data0;
+input[2047:0] lsu2mem_addr0, simd0_2vgpr_dest_data0, simd1_2vgpr_dest_data0,
+      simd2_2vgpr_dest_data0, simd3_2vgpr_dest_data0, simf0_2vgpr_dest_data0,
+      simf1_2vgpr_dest_data0, simf2_2vgpr_dest_data0, simf3_2vgpr_dest_data0;
+input[8191:0] lsu2mem_wr_data0, lsu2vgpr_dest_data0;
+//out CU 1
+input cu2dispatch_wf_done1, lsu2mem_gm_or_lds1, fetch2buff_rd_en1, issue2tracemon_barrier_retire_en1,
+      issue2tracemon_waitcnt_retire_en1, wave2decode_instr_valid1, salu2sgpr_instr_done1,
+      salu2exec_wr_exec_en1, salu2exec_wr_vcc_en1, salu2exec_wr_scc_en1, salu2exec_wr_scc_value1,
+      simd0_2vgpr_instr_done1, simd1_2vgpr_instr_done1, simd2_2vgpr_instr_done1,
+      simd3_2vgpr_instr_done1, simd0_2exec_wr_vcc_en1, simd0_2vgpr_wr_en1, simd1_2exec_wr_vcc_en1,
+      simd1_2vgpr_wr_en1, simd2_2exec_wr_vcc_en1, simd2_2vgpr_wr_en1, simd3_2exec_wr_vcc_en1,
+      simd3_2vgpr_wr_en1, simf0_2vgpr_instr_done1, simf1_2vgpr_instr_done1, simf2_2vgpr_instr_done1,
+      simf3_2vgpr_instr_done1, simf0_2exec_wr_vcc_en1, simf0_2vgpr_wr_en1, simf1_2exec_wr_vcc_en1,
+      simf1_2vgpr_wr_en1, simf2_2exec_wr_vcc_en1, simf2_2vgpr_wr_en1, simf3_2exec_wr_vcc_en1,
+      simf3_2vgpr_wr_en1, simd0_2sgpr_wr_en1, simd1_2sgpr_wr_en1, simd2_2sgpr_wr_en1,
+      simd3_2sgpr_wr_en1, simf0_2sgpr_wr_en1, simf1_2sgpr_wr_en1, simf2_2sgpr_wr_en1,
+      simf3_2sgpr_wr_en1, lsu2sgpr_instr_done1, lsu2vgpr_instr_done1, issue2fetchwave_wf_done_en1,
+      salu2fetchwaveissue_branch_en1, salu2fetchwaveissue_branch_taken1, decode2tracemon_colldone1,
+      decode2issue_valid1, lsu2tracemon_gm_or_lds1, fetch2tracemon_dispatch1,
+      salu2exec_wr_m0_en1, decode2issue_barrier1;
+input[1:0] salu2tracemon_exec_word_sel1, salu2tracemon_vcc_word_sel1,
+      salu2sgpr_dest_wr_en1;
+input[3:0] lsu2mem_rd_en1, lsu2sgpr_dest_wr_en1, lsu2vgpr_dest_wr_en1;
+input[5:0] issue2tracemon_waitcnt_retire_wfid1, wave2decode_wfid1, salu2sgpr_instr_done_wfid1,
+      simd0_2vgpr_instr_done_wfid1, simd1_2vgpr_instr_done_wfid1, simd2_2vgpr_instr_done_wfid1,
+      simd3_2vgpr_instr_done_wfid1, simf0_2vgpr_instr_done_wfid1, simf1_2vgpr_instr_done_wfid1,
+      simf2_2vgpr_instr_done_wfid1, simf3_2vgpr_instr_done_wfid1, lsu2sgpr_instr_done_wfid1,
+      lsu2vgpr_instr_done_wfid1, issue2fetchwave_wf_done_wf_id1, salu2fetchwaveissue_branch_wfid1,
+      decode2issue_wfid1, fetch2tracemon_new_wfid1;
+input[6:0] lsu2mem_tag_req1;
+input[8:0] wave2decode_sgpr_base1, salu2sgpr_dest_addr1, simd0_2sgpr_wr_addr1,
+      simd1_2sgpr_wr_addr1, simd2_2sgpr_wr_addr1, simd3_2sgpr_wr_addr1, simf0_2sgpr_wr_addr1,
+      simf1_2sgpr_wr_addr1, simf2_2sgpr_wr_addr1, simf3_2sgpr_wr_addr1, lsu2sgpr_dest_addr1;
+input[9:0] wave2decode_vgpr_base1, simd0_2vgpr_dest_addr1, simd1_2vgpr_dest_addr1,
+      simd2_2vgpr_dest_addr1, simd3_2vgpr_dest_addr1, simf0_2vgpr_dest_addr1,
+      simf1_2vgpr_dest_addr1, simf2_2vgpr_dest_addr1, simf3_2vgpr_dest_addr1,
+      lsu2vgpr_dest_addr1;
+input[14:0] cu2dispatch_wf_tag_done1, fetch2tracemon_wf_tag1;
+input[15:0] wave2decode_lds_base1, rfa2execvgprsgpr_select_fu1;
+input[31:0] fetch2buff_addr1, simd0_2tracemon_retire_pc1, simd1_2tracemon_retire_pc1,
+      simd2_2tracemon_retire_pc1, simd3_2tracemon_retire_pc1, simf0_2tracemon_retire_pc1,
+      simf1_2tracemon_retire_pc1, simf2_2tracemon_retire_pc1, simf3_2tracemon_retire_pc1,
+      salu2tracemon_retire_pc1, lsu2tracemon_retire_pc1, issue2tracemon_barrier_retire_pc1,
+      issue2tracemon_waitcnt_retire_pc1, salu2fetch_branch_pc_value1, decode2issue_instr_pc1,
+      salu2exec_wr_m0_value1;
+input[38:0] fetch2buff_tag1;
+input[39:0] issue2tracemon_barrier_retire_wf_bitmap1;
+input[63:0] lsu2mem_wr_mask1, salu2exec_wr_exec_value1, salu2exec_wr_vcc_value1,
+      salu2sgpr_dest_data1, simd0_2exec_wr_vcc_value1, simd0_2vgpr_wr_mask1,
+      simd1_2exec_wr_vcc_value1, simd1_2vgpr_wr_mask1, simd2_2exec_wr_vcc_value1,
+      simd2_2vgpr_wr_mask1, simd3_2exec_wr_vcc_value1, simd3_2vgpr_wr_mask1,
+      simf0_2exec_wr_vcc_value1, simf0_2vgpr_wr_mask1, simf1_2exec_wr_vcc_value1,
+      simf1_2vgpr_wr_mask1, simf2_2exec_wr_vcc_value1, simf2_2vgpr_wr_mask1,
+      simf3_2exec_wr_vcc_value1, simf3_2vgpr_wr_mask1, simd0_2sgpr_wr_data1,
+      simd1_2sgpr_wr_data1, simd2_2sgpr_wr_data1, simd3_2sgpr_wr_data1, simf0_2sgpr_wr_data1,
+      simf1_2sgpr_wr_data1, simf2_2sgpr_wr_data1, simf3_2sgpr_wr_data1, lsu2vgpr_dest_wr_mask1,
+      decode2tracemon_collinstr1;
+input[127:0] lsu2sgpr_dest_data1;
+input[2047:0] lsu2mem_addr1, simd0_2vgpr_dest_data1, simd1_2vgpr_dest_data1,
+      simd2_2vgpr_dest_data1, simd3_2vgpr_dest_data1, simf0_2vgpr_dest_data1,
+      simf1_2vgpr_dest_data1, simf2_2vgpr_dest_data1, simf3_2vgpr_dest_data1;
+input[8191:0] lsu2mem_wr_data1, lsu2vgpr_dest_data1;
+//output CU 2
+input cu2dispatch_wf_done2, lsu2mem_gm_or_lds2, fetch2buff_rd_en2, issue2tracemon_barrier_retire_en2,
+      issue2tracemon_waitcnt_retire_en2, wave2decode_instr_valid2, salu2sgpr_instr_done2,
+      salu2exec_wr_exec_en2, salu2exec_wr_vcc_en2, salu2exec_wr_scc_en2, salu2exec_wr_scc_value2,
+      simd0_2vgpr_instr_done2, simd1_2vgpr_instr_done2, simd2_2vgpr_instr_done2,
+      simd3_2vgpr_instr_done2, simd0_2exec_wr_vcc_en2, simd0_2vgpr_wr_en2, simd1_2exec_wr_vcc_en2,
+      simd1_2vgpr_wr_en2, simd2_2exec_wr_vcc_en2, simd2_2vgpr_wr_en2, simd3_2exec_wr_vcc_en2,
+      simd3_2vgpr_wr_en2, simf0_2vgpr_instr_done2, simf1_2vgpr_instr_done2, simf2_2vgpr_instr_done2,
+      simf3_2vgpr_instr_done2, simf0_2exec_wr_vcc_en2, simf0_2vgpr_wr_en2, simf1_2exec_wr_vcc_en2,
+      simf1_2vgpr_wr_en2, simf2_2exec_wr_vcc_en2, simf2_2vgpr_wr_en2, simf3_2exec_wr_vcc_en2,
+      simf3_2vgpr_wr_en2, simd0_2sgpr_wr_en2, simd1_2sgpr_wr_en2, simd2_2sgpr_wr_en2,
+      simd3_2sgpr_wr_en2, simf0_2sgpr_wr_en2, simf1_2sgpr_wr_en2, simf2_2sgpr_wr_en2,
+      simf3_2sgpr_wr_en2, lsu2sgpr_instr_done2, lsu2vgpr_instr_done2, issue2fetchwave_wf_done_en2,
+      salu2fetchwaveissue_branch_en2, salu2fetchwaveissue_branch_taken2, decode2tracemon_colldone2,
+      decode2issue_valid2, lsu2tracemon_gm_or_lds2, fetch2tracemon_dispatch2,
+      salu2exec_wr_m0_en2, decode2issue_barrier2;
+input[1:0] salu2tracemon_exec_word_sel2, salu2tracemon_vcc_word_sel2,
+      salu2sgpr_dest_wr_en2;
+input[3:0] lsu2mem_rd_en2, lsu2sgpr_dest_wr_en2, lsu2vgpr_dest_wr_en2;
+input[5:0] issue2tracemon_waitcnt_retire_wfid2, wave2decode_wfid2, salu2sgpr_instr_done_wfid2,
+      simd0_2vgpr_instr_done_wfid2, simd1_2vgpr_instr_done_wfid2, simd2_2vgpr_instr_done_wfid2,
+      simd3_2vgpr_instr_done_wfid2, simf0_2vgpr_instr_done_wfid2, simf1_2vgpr_instr_done_wfid2,
+      simf2_2vgpr_instr_done_wfid2, simf3_2vgpr_instr_done_wfid2, lsu2sgpr_instr_done_wfid2,
+      lsu2vgpr_instr_done_wfid2, issue2fetchwave_wf_done_wf_id2, salu2fetchwaveissue_branch_wfid2,
+      decode2issue_wfid2, fetch2tracemon_new_wfid2;
+input[6:0] lsu2mem_tag_req2;
+input[8:0] wave2decode_sgpr_base2, salu2sgpr_dest_addr2, simd0_2sgpr_wr_addr2,
+      simd1_2sgpr_wr_addr2, simd2_2sgpr_wr_addr2, simd3_2sgpr_wr_addr2, simf0_2sgpr_wr_addr2,
+      simf1_2sgpr_wr_addr2, simf2_2sgpr_wr_addr2, simf3_2sgpr_wr_addr2, lsu2sgpr_dest_addr2;
+input[9:0] wave2decode_vgpr_base2, simd0_2vgpr_dest_addr2, simd1_2vgpr_dest_addr2,
+      simd2_2vgpr_dest_addr2, simd3_2vgpr_dest_addr2, simf0_2vgpr_dest_addr2,
+      simf1_2vgpr_dest_addr2, simf2_2vgpr_dest_addr2, simf3_2vgpr_dest_addr2,
+      lsu2vgpr_dest_addr2;
+input[14:0] cu2dispatch_wf_tag_done2, fetch2tracemon_wf_tag2;
+input[15:0] wave2decode_lds_base2, rfa2execvgprsgpr_select_fu2;
+input[31:0] fetch2buff_addr2, simd0_2tracemon_retire_pc2, simd1_2tracemon_retire_pc2,
+      simd2_2tracemon_retire_pc2, simd3_2tracemon_retire_pc2, simf0_2tracemon_retire_pc2,
+      simf1_2tracemon_retire_pc2, simf2_2tracemon_retire_pc2, simf3_2tracemon_retire_pc2,
+      salu2tracemon_retire_pc2, lsu2tracemon_retire_pc2, issue2tracemon_barrier_retire_pc2,
+      issue2tracemon_waitcnt_retire_pc2, salu2fetch_branch_pc_value2, decode2issue_instr_pc2,
+      salu2exec_wr_m0_value2;
+input[38:0] fetch2buff_tag2;
+input[39:0] issue2tracemon_barrier_retire_wf_bitmap2;
+input[63:0] lsu2mem_wr_mask2, salu2exec_wr_exec_value2, salu2exec_wr_vcc_value2,
+      salu2sgpr_dest_data2, simd0_2exec_wr_vcc_value2, simd0_2vgpr_wr_mask2,
+      simd1_2exec_wr_vcc_value2, simd1_2vgpr_wr_mask2, simd2_2exec_wr_vcc_value2,
+      simd2_2vgpr_wr_mask2, simd3_2exec_wr_vcc_value2, simd3_2vgpr_wr_mask2,
+      simf0_2exec_wr_vcc_value2, simf0_2vgpr_wr_mask2, simf1_2exec_wr_vcc_value2,
+      simf1_2vgpr_wr_mask2, simf2_2exec_wr_vcc_value2, simf2_2vgpr_wr_mask2,
+      simf3_2exec_wr_vcc_value2, simf3_2vgpr_wr_mask2, simd0_2sgpr_wr_data2,
+      simd1_2sgpr_wr_data2, simd2_2sgpr_wr_data2, simd3_2sgpr_wr_data2, simf0_2sgpr_wr_data2,
+      simf1_2sgpr_wr_data2, simf2_2sgpr_wr_data2, simf3_2sgpr_wr_data2, lsu2vgpr_dest_wr_mask2,
+      decode2tracemon_collinstr2;
+input[127:0] lsu2sgpr_dest_data2;
+input[2047:0] lsu2mem_addr2, simd0_2vgpr_dest_data2, simd1_2vgpr_dest_data2,
+      simd2_2vgpr_dest_data2, simd3_2vgpr_dest_data2, simf0_2vgpr_dest_data2,
+      simf1_2vgpr_dest_data2, simf2_2vgpr_dest_data2, simf3_2vgpr_dest_data2;
+input[8191:0] lsu2mem_wr_data2, lsu2vgpr_dest_data2;
+//output CU 3
+input cu2dispatch_wf_done3, lsu2mem_gm_or_lds3, fetch2buff_rd_en3, issue2tracemon_barrier_retire_en3,
+      issue2tracemon_waitcnt_retire_en3, wave2decode_instr_valid3, salu2sgpr_instr_done3,
+      salu2exec_wr_exec_en3, salu2exec_wr_vcc_en3, salu2exec_wr_scc_en3, salu2exec_wr_scc_value3,
+      simd0_2vgpr_instr_done3, simd1_2vgpr_instr_done3, simd2_2vgpr_instr_done3,
+      simd3_2vgpr_instr_done3, simd0_2exec_wr_vcc_en3, simd0_2vgpr_wr_en3, simd1_2exec_wr_vcc_en3,
+      simd1_2vgpr_wr_en3, simd2_2exec_wr_vcc_en3, simd2_2vgpr_wr_en3, simd3_2exec_wr_vcc_en3,
+      simd3_2vgpr_wr_en3, simf0_2vgpr_instr_done3, simf1_2vgpr_instr_done3, simf2_2vgpr_instr_done3,
+      simf3_2vgpr_instr_done3, simf0_2exec_wr_vcc_en3, simf0_2vgpr_wr_en3, simf1_2exec_wr_vcc_en3,
+      simf1_2vgpr_wr_en3, simf2_2exec_wr_vcc_en3, simf2_2vgpr_wr_en3, simf3_2exec_wr_vcc_en3,
+      simf3_2vgpr_wr_en3, simd0_2sgpr_wr_en3, simd1_2sgpr_wr_en3, simd2_2sgpr_wr_en3,
+      simd3_2sgpr_wr_en3, simf0_2sgpr_wr_en3, simf1_2sgpr_wr_en3, simf2_2sgpr_wr_en3,
+      simf3_2sgpr_wr_en3, lsu2sgpr_instr_done3, lsu2vgpr_instr_done3, issue2fetchwave_wf_done_en3,
+      salu2fetchwaveissue_branch_en3, salu2fetchwaveissue_branch_taken3, decode2tracemon_colldone3,
+      decode2issue_valid3, lsu2tracemon_gm_or_lds3, fetch2tracemon_dispatch3,
+      salu2exec_wr_m0_en3, decode2issue_barrier3;
+input[1:0] salu2tracemon_exec_word_sel3, salu2tracemon_vcc_word_sel3,
+      salu2sgpr_dest_wr_en3;
+input[3:0] lsu2mem_rd_en3, lsu2sgpr_dest_wr_en3, lsu2vgpr_dest_wr_en3;
+input[5:0] issue2tracemon_waitcnt_retire_wfid3, wave2decode_wfid3, salu2sgpr_instr_done_wfid3,
+      simd0_2vgpr_instr_done_wfid3, simd1_2vgpr_instr_done_wfid3, simd2_2vgpr_instr_done_wfid3,
+      simd3_2vgpr_instr_done_wfid3, simf0_2vgpr_instr_done_wfid3, simf1_2vgpr_instr_done_wfid3,
+      simf2_2vgpr_instr_done_wfid3, simf3_2vgpr_instr_done_wfid3, lsu2sgpr_instr_done_wfid3,
+      lsu2vgpr_instr_done_wfid3, issue2fetchwave_wf_done_wf_id3, salu2fetchwaveissue_branch_wfid3,
+      decode2issue_wfid3, fetch2tracemon_new_wfid3;
+input[6:0] lsu2mem_tag_req3;
+input[8:0] wave2decode_sgpr_base3, salu2sgpr_dest_addr3, simd0_2sgpr_wr_addr3,
+      simd1_2sgpr_wr_addr3, simd2_2sgpr_wr_addr3, simd3_2sgpr_wr_addr3, simf0_2sgpr_wr_addr3,
+      simf1_2sgpr_wr_addr3, simf2_2sgpr_wr_addr3, simf3_2sgpr_wr_addr3, lsu2sgpr_dest_addr3;
+input[9:0] wave2decode_vgpr_base3, simd0_2vgpr_dest_addr3, simd1_2vgpr_dest_addr3,
+      simd2_2vgpr_dest_addr3, simd3_2vgpr_dest_addr3, simf0_2vgpr_dest_addr3,
+      simf1_2vgpr_dest_addr3, simf2_2vgpr_dest_addr3, simf3_2vgpr_dest_addr3,
+      lsu2vgpr_dest_addr3;
+input[14:0] cu2dispatch_wf_tag_done3, fetch2tracemon_wf_tag3;
+input[15:0] wave2decode_lds_base3, rfa2execvgprsgpr_select_fu3;
+input[31:0] fetch2buff_addr3, simd0_2tracemon_retire_pc3, simd1_2tracemon_retire_pc3,
+      simd2_2tracemon_retire_pc3, simd3_2tracemon_retire_pc3, simf0_2tracemon_retire_pc3,
+      simf1_2tracemon_retire_pc3, simf2_2tracemon_retire_pc3, simf3_2tracemon_retire_pc3,
+      salu2tracemon_retire_pc3, lsu2tracemon_retire_pc3, issue2tracemon_barrier_retire_pc3,
+      issue2tracemon_waitcnt_retire_pc3, salu2fetch_branch_pc_value3, decode2issue_instr_pc3,
+      salu2exec_wr_m0_value3;
+input[38:0] fetch2buff_tag3;
+input[39:0] issue2tracemon_barrier_retire_wf_bitmap3;
+input[63:0] lsu2mem_wr_mask3, salu2exec_wr_exec_value3, salu2exec_wr_vcc_value3,
+      salu2sgpr_dest_data3, simd0_2exec_wr_vcc_value3, simd0_2vgpr_wr_mask3,
+      simd1_2exec_wr_vcc_value3, simd1_2vgpr_wr_mask3, simd2_2exec_wr_vcc_value3,
+      simd2_2vgpr_wr_mask3, simd3_2exec_wr_vcc_value3, simd3_2vgpr_wr_mask3,
+      simf0_2exec_wr_vcc_value3, simf0_2vgpr_wr_mask3, simf1_2exec_wr_vcc_value3,
+      simf1_2vgpr_wr_mask3, simf2_2exec_wr_vcc_value3, simf2_2vgpr_wr_mask3,
+      simf3_2exec_wr_vcc_value3, simf3_2vgpr_wr_mask3, simd0_2sgpr_wr_data3,
+      simd1_2sgpr_wr_data3, simd2_2sgpr_wr_data3, simd3_2sgpr_wr_data3, simf0_2sgpr_wr_data3,
+      simf1_2sgpr_wr_data3, simf2_2sgpr_wr_data3, simf3_2sgpr_wr_data3, lsu2vgpr_dest_wr_mask3,
+      decode2tracemon_collinstr3;
+input[127:0] lsu2sgpr_dest_data3;
+input[2047:0] lsu2mem_addr3, simd0_2vgpr_dest_data3, simd1_2vgpr_dest_data3,
+      simd2_2vgpr_dest_data3, simd3_2vgpr_dest_data3, simf0_2vgpr_dest_data3,
+      simf1_2vgpr_dest_data3, simf2_2vgpr_dest_data3, simf3_2vgpr_dest_data3;
+input[8191:0] lsu2mem_wr_data3, lsu2vgpr_dest_data3;
+//output FIFO
+output cu2dispatch_wf_done, lsu2mem_gm_or_lds, fetch2buff_rd_en, issue2tracemon_barrier_retire_en,
+         issue2tracemon_waitcnt_retire_en, wave2decode_instr_valid, salu2sgpr_instr_done,
+         salu2exec_wr_exec_en, salu2exec_wr_vcc_en, salu2exec_wr_scc_en, salu2exec_wr_scc_value,
+         simd0_2vgpr_instr_done, simd1_2vgpr_instr_done, simd2_2vgpr_instr_done,
+         simd3_2vgpr_instr_done, simd0_2exec_wr_vcc_en, simd0_2vgpr_wr_en, simd1_2exec_wr_vcc_en,
+         simd1_2vgpr_wr_en, simd2_2exec_wr_vcc_en, simd2_2vgpr_wr_en, simd3_2exec_wr_vcc_en,
+         simd3_2vgpr_wr_en, simf0_2vgpr_instr_done, simf1_2vgpr_instr_done, simf2_2vgpr_instr_done,
+         simf3_2vgpr_instr_done, simf0_2exec_wr_vcc_en, simf0_2vgpr_wr_en, simf1_2exec_wr_vcc_en,
+         simf1_2vgpr_wr_en, simf2_2exec_wr_vcc_en, simf2_2vgpr_wr_en, simf3_2exec_wr_vcc_en,
+         simf3_2vgpr_wr_en, simd0_2sgpr_wr_en, simd1_2sgpr_wr_en, simd2_2sgpr_wr_en,
+         simd3_2sgpr_wr_en, simf0_2sgpr_wr_en, simf1_2sgpr_wr_en, simf2_2sgpr_wr_en,
+         simf3_2sgpr_wr_en, lsu2sgpr_instr_done, lsu2vgpr_instr_done, issue2fetchwave_wf_done_en,
+         salu2fetchwaveissue_branch_en, salu2fetchwaveissue_branch_taken, decode2tracemon_colldone,
+         decode2issue_valid, lsu2tracemon_gm_or_lds, fetch2tracemon_dispatch,
+         salu2exec_wr_m0_en, decode2issue_barrier;
+output[1:0] salu2tracemon_exec_word_sel, salu2tracemon_vcc_word_sel,
+         salu2sgpr_dest_wr_en;
+output[3:0] lsu2mem_rd_en, lsu2sgpr_dest_wr_en, lsu2vgpr_dest_wr_en;
+output[5:0] issue2tracemon_waitcnt_retire_wfid, wave2decode_wfid, salu2sgpr_instr_done_wfid,
+         simd0_2vgpr_instr_done_wfid, simd1_2vgpr_instr_done_wfid, simd2_2vgpr_instr_done_wfid,
+         simd3_2vgpr_instr_done_wfid, simf0_2vgpr_instr_done_wfid, simf1_2vgpr_instr_done_wfid,
+         simf2_2vgpr_instr_done_wfid, simf3_2vgpr_instr_done_wfid, lsu2sgpr_instr_done_wfid,
+         lsu2vgpr_instr_done_wfid, issue2fetchwave_wf_done_wf_id, salu2fetchwaveissue_branch_wfid,
+         decode2issue_wfid, fetch2tracemon_new_wfid;
+output[6:0] lsu2mem_tag_req;
+output[8:0] wave2decode_sgpr_base, salu2sgpr_dest_addr, simd0_2sgpr_wr_addr,
+         simd1_2sgpr_wr_addr, simd2_2sgpr_wr_addr, simd3_2sgpr_wr_addr, simf0_2sgpr_wr_addr,
+         simf1_2sgpr_wr_addr, simf2_2sgpr_wr_addr, simf3_2sgpr_wr_addr, lsu2sgpr_dest_addr;
+output[9:0] wave2decode_vgpr_base, simd0_2vgpr_dest_addr, simd1_2vgpr_dest_addr,
+         simd2_2vgpr_dest_addr, simd3_2vgpr_dest_addr, simf0_2vgpr_dest_addr,
+         simf1_2vgpr_dest_addr, simf2_2vgpr_dest_addr, simf3_2vgpr_dest_addr,
+         lsu2vgpr_dest_addr;
+output[14:0] cu2dispatch_wf_tag_done, fetch2tracemon_wf_tag;
+output[15:0] wave2decode_lds_base, rfa2execvgprsgpr_select_fu;
+output[31:0] fetch2buff_addr, simd0_2tracemon_retire_pc, simd1_2tracemon_retire_pc,
+         simd2_2tracemon_retire_pc, simd3_2tracemon_retire_pc, simf0_2tracemon_retire_pc,
+         simf1_2tracemon_retire_pc, simf2_2tracemon_retire_pc, simf3_2tracemon_retire_pc,
+         salu2tracemon_retire_pc, lsu2tracemon_retire_pc, issue2tracemon_barrier_retire_pc,
+         issue2tracemon_waitcnt_retire_pc, salu2fetch_branch_pc_value, decode2issue_instr_pc,
+         salu2exec_wr_m0_value;
+output[38:0] fetch2buff_tag;
+output[39:0] issue2tracemon_barrier_retire_wf_bitmap;
+output[63:0] lsu2mem_wr_mask, salu2exec_wr_exec_value, salu2exec_wr_vcc_value,
+         salu2sgpr_dest_data, simd0_2exec_wr_vcc_value, simd0_2vgpr_wr_mask,
+         simd1_2exec_wr_vcc_value, simd1_2vgpr_wr_mask, simd2_2exec_wr_vcc_value,
+         simd2_2vgpr_wr_mask, simd3_2exec_wr_vcc_value, simd3_2vgpr_wr_mask,
+         simf0_2exec_wr_vcc_value, simf0_2vgpr_wr_mask, simf1_2exec_wr_vcc_value,
+         simf1_2vgpr_wr_mask, simf2_2exec_wr_vcc_value, simf2_2vgpr_wr_mask,
+         simf3_2exec_wr_vcc_value, simf3_2vgpr_wr_mask, simd0_2sgpr_wr_data,
+         simd1_2sgpr_wr_data, simd2_2sgpr_wr_data, simd3_2sgpr_wr_data, simf0_2sgpr_wr_data,
+         simf1_2sgpr_wr_data, simf2_2sgpr_wr_data, simf3_2sgpr_wr_data, lsu2vgpr_dest_wr_mask,
+         decode2tracemon_collinstr;
+output[127:0] lsu2sgpr_dest_data;
+output[2047:0] lsu2mem_addr, simd0_2vgpr_dest_data, simd1_2vgpr_dest_data,
+         simd2_2vgpr_dest_data, simd3_2vgpr_dest_data, simf0_2vgpr_dest_data,
+         simf1_2vgpr_dest_data, simf2_2vgpr_dest_data, simf3_2vgpr_dest_data;
+output[8191:0] lsu2mem_wr_data, lsu2vgpr_dest_data;
+
+)
+assign data0 = {
+      cu2dispatch_wf_done0, lsu2mem_gm_or_lds0, fetch2buff_rd_en0, issue2tracemon_barrier_retire_en0,
+      issue2tracemon_waitcnt_retire_en0, wave2decode_instr_valid0, salu2sgpr_instr_done0,
+      salu2exec_wr_exec_en0, salu2exec_wr_vcc_en0, salu2exec_wr_scc_en0, salu2exec_wr_scc_value0,
+      simd0_2vgpr_instr_done0, simd1_2vgpr_instr_done0, simd2_2vgpr_instr_done0,
+      simd3_2vgpr_instr_done0, simd0_2exec_wr_vcc_en0, simd0_2vgpr_wr_en0, simd1_2exec_wr_vcc_en0,
+      simd1_2vgpr_wr_en0, simd2_2exec_wr_vcc_en0, simd2_2vgpr_wr_en0, simd3_2exec_wr_vcc_en0,
+      simd3_2vgpr_wr_en0, simf0_2vgpr_instr_done0, simf1_2vgpr_instr_done0, simf2_2vgpr_instr_done0,
+      simf3_2vgpr_instr_done0, simf0_2exec_wr_vcc_en0, simf0_2vgpr_wr_en0, simf1_2exec_wr_vcc_en0,
+      simf1_2vgpr_wr_en0, simf2_2exec_wr_vcc_en0, simf2_2vgpr_wr_en0, simf3_2exec_wr_vcc_en0,
+      simf3_2vgpr_wr_en0, simd0_2sgpr_wr_en0, simd1_2sgpr_wr_en0, simd2_2sgpr_wr_en0,
+      simd3_2sgpr_wr_en0, simf0_2sgpr_wr_en0, simf1_2sgpr_wr_en0, simf2_2sgpr_wr_en0,
+      simf3_2sgpr_wr_en0, lsu2sgpr_instr_done0, lsu2vgpr_instr_done0, issue2fetchwave_wf_done_en0,
+      salu2fetchwaveissue_branch_en0, salu2fetchwaveissue_branch_taken0, decode2tracemon_colldone0,
+      decode2issue_valid0, lsu2tracemon_gm_or_lds0, fetch2tracemon_dispatch0,
+      salu2exec_wr_m0_en0, decode2issue_barrier0,
+salu2tracemon_exec_word_sel0, salu2tracemon_vcc_word_sel0,
+      salu2sgpr_dest_wr_en0,
+lsu2mem_rd_en0, lsu2sgpr_dest_wr_en0, lsu2vgpr_dest_wr_en0,
+issue2tracemon_waitcnt_retire_wfid0, wave2decode_wfid0, salu2sgpr_instr_done_wfid0,
+      simd0_2vgpr_instr_done_wfid0, simd1_2vgpr_instr_done_wfid0, simd2_2vgpr_instr_done_wfid0,
+      simd3_2vgpr_instr_done_wfid0, simf0_2vgpr_instr_done_wfid0, simf1_2vgpr_instr_done_wfid0,
+      simf2_2vgpr_instr_done_wfid0, simf3_2vgpr_instr_done_wfid0, lsu2sgpr_instr_done_wfid0,
+      lsu2vgpr_instr_done_wfid0, issue2fetchwave_wf_done_wf_id0, salu2fetchwaveissue_branch_wfid0,
+      decode2issue_wfid0, fetch2tracemon_new_wfid0,
+lsu2mem_tag_req0,
+wave2decode_sgpr_base0, salu2sgpr_dest_addr0, simd0_2sgpr_wr_addr0,
+      simd1_2sgpr_wr_addr0, simd2_2sgpr_wr_addr0, simd3_2sgpr_wr_addr0, simf0_2sgpr_wr_addr0,
+      simf1_2sgpr_wr_addr0, simf2_2sgpr_wr_addr0, simf3_2sgpr_wr_addr0, lsu2sgpr_dest_addr0,
+wave2decode_vgpr_base0, simd0_2vgpr_dest_addr0, simd1_2vgpr_dest_addr0,
+      simd2_2vgpr_dest_addr0, simd3_2vgpr_dest_addr0, simf0_2vgpr_dest_addr0,
+      simf1_2vgpr_dest_addr0, simf2_2vgpr_dest_addr0, simf3_2vgpr_dest_addr0,
+      lsu2vgpr_dest_addr0,
+cu2dispatch_wf_tag_done0, fetch2tracemon_wf_tag0,
+wave2decode_lds_base0, rfa2execvgprsgpr_select_fu0,
+fetch2buff_addr0, simd0_2tracemon_retire_pc0, simd1_2tracemon_retire_pc0,
+      simd2_2tracemon_retire_pc0, simd3_2tracemon_retire_pc0, simf0_2tracemon_retire_pc0,
+      simf1_2tracemon_retire_pc0, simf2_2tracemon_retire_pc0, simf3_2tracemon_retire_pc0,
+      salu2tracemon_retire_pc0, lsu2tracemon_retire_pc0, issue2tracemon_barrier_retire_pc0,
+      issue2tracemon_waitcnt_retire_pc0, salu2fetch_branch_pc_value0, decode2issue_instr_pc0,
+      salu2exec_wr_m0_value0,
+fetch2buff_tag0,
+issue2tracemon_barrier_retire_wf_bitmap0,
+lsu2mem_wr_mask0, salu2exec_wr_exec_value0, salu2exec_wr_vcc_value0,
+      salu2sgpr_dest_data0, simd0_2exec_wr_vcc_value0, simd0_2vgpr_wr_mask0,
+      simd1_2exec_wr_vcc_value0, simd1_2vgpr_wr_mask0, simd2_2exec_wr_vcc_value0,
+      simd2_2vgpr_wr_mask0, simd3_2exec_wr_vcc_value0, simd3_2vgpr_wr_mask0,
+      simf0_2exec_wr_vcc_value0, simf0_2vgpr_wr_mask0, simf1_2exec_wr_vcc_value0,
+      simf1_2vgpr_wr_mask0, simf2_2exec_wr_vcc_value0, simf2_2vgpr_wr_mask0,
+      simf3_2exec_wr_vcc_value0, simf3_2vgpr_wr_mask0, simd0_2sgpr_wr_data0,
+      simd1_2sgpr_wr_data0, simd2_2sgpr_wr_data0, simd3_2sgpr_wr_data0, simf0_2sgpr_wr_data0,
+      simf1_2sgpr_wr_data0, simf2_2sgpr_wr_data0, simf3_2sgpr_wr_data0, lsu2vgpr_dest_wr_mask0,
+      decode2tracemon_collinstr0,
+lsu2sgpr_dest_data0,
+lsu2mem_addr0, simd0_2vgpr_dest_data0, simd1_2vgpr_dest_data0,
+      simd2_2vgpr_dest_data0, simd3_2vgpr_dest_data0, simf0_2vgpr_dest_data0,
+      simf1_2vgpr_dest_data0, simf2_2vgpr_dest_data0, simf3_2vgpr_dest_data0,
+lsu2mem_wr_data0, lsu2vgpr_dest_data0,
+};
+assign data1 = {
+      issue2tracemon_barrier_retire_en1,
+      issue2tracemon_waitcnt_retire_en1, wave2decode_instr_valid1, salu2sgpr_instr_done1,
+      salu2exec_wr_exec_en1, salu2exec_wr_vcc_en1, salu2exec_wr_scc_en1, salu2exec_wr_scc_value1,
+      simd0_2vgpr_instr_done1, simd1_2vgpr_instr_done1, simd2_2vgpr_instr_done1,
+      simd3_2vgpr_instr_done1, simd0_2exec_wr_vcc_en1, simd0_2vgpr_wr_en1, simd1_2exec_wr_vcc_en1,
+      simd1_2vgpr_wr_en1, simd2_2exec_wr_vcc_en1, simd2_2vgpr_wr_en1, simd3_2exec_wr_vcc_en1,
+      simd3_2vgpr_wr_en1, simf0_2vgpr_instr_done1, simf1_2vgpr_instr_done1, simf2_2vgpr_instr_done1,
+      simf3_2vgpr_instr_done1, simf0_2exec_wr_vcc_en1, simf0_2vgpr_wr_en1, simf1_2exec_wr_vcc_en1,
+      simf1_2vgpr_wr_en1, simf2_2exec_wr_vcc_en1, simf2_2vgpr_wr_en1, simf3_2exec_wr_vcc_en1,
+      simf3_2vgpr_wr_en1, simd0_2sgpr_wr_en1, simd1_2sgpr_wr_en1, simd2_2sgpr_wr_en1,
+      simd3_2sgpr_wr_en1, simf0_2sgpr_wr_en1, simf1_2sgpr_wr_en1, simf2_2sgpr_wr_en1,
+      simf3_2sgpr_wr_en1, lsu2sgpr_instr_done1, lsu2vgpr_instr_done1, issue2fetchwave_wf_done_en1,
+      salu2fetchwaveissue_branch_en1, salu2fetchwaveissue_branch_taken1, decode2tracemon_colldone1,
+      decode2issue_valid1, lsu2tracemon_gm_or_lds1, fetch2tracemon_dispatch1,
+      salu2exec_wr_m0_en1, decode2issue_barrier1, salu2tracemon_exec_word_sel1, salu2tracemon_vcc_word_sel1,
+      salu2sgpr_dest_wr_en1, lsu2mem_rd_en1, lsu2sgpr_dest_wr_en1, lsu2vgpr_dest_wr_en1, issue2tracemon_waitcnt_retire_wfid1, wave2decode_wfid1, salu2sgpr_instr_done_wfid1,
+      simd0_2vgpr_instr_done_wfid1, simd1_2vgpr_instr_done_wfid1, simd2_2vgpr_instr_done_wfid1,
+      simd3_2vgpr_instr_done_wfid1, simf0_2vgpr_instr_done_wfid1, simf1_2vgpr_instr_done_wfid1,
+      simf2_2vgpr_instr_done_wfid1, simf3_2vgpr_instr_done_wfid1, lsu2sgpr_instr_done_wfid1,
+      lsu2vgpr_instr_done_wfid1, issue2fetchwave_wf_done_wf_id1, salu2fetchwaveissue_branch_wfid1,
+      decode2issue_wfid1, fetch2tracemon_new_wfid1, lsu2mem_tag_req1, wave2decode_sgpr_base1, salu2sgpr_dest_addr1, simd0_2sgpr_wr_addr1,
+      simd1_2sgpr_wr_addr1, simd2_2sgpr_wr_addr1, simd3_2sgpr_wr_addr1, simf0_2sgpr_wr_addr1,
+      simf1_2sgpr_wr_addr1, simf2_2sgpr_wr_addr1, simf3_2sgpr_wr_addr1, lsu2sgpr_dest_addr1, wave2decode_vgpr_base1, simd0_2vgpr_dest_addr1, simd1_2vgpr_dest_addr1,
+      simd2_2vgpr_dest_addr1, simd3_2vgpr_dest_addr1, simf0_2vgpr_dest_addr1,
+      simf1_2vgpr_dest_addr1, simf2_2vgpr_dest_addr1, simf3_2vgpr_dest_addr1,
+      lsu2vgpr_dest_addr1, cu2dispatch_wf_tag_done1, fetch2tracemon_wf_tag1, wave2decode_lds_base1, rfa2execvgprsgpr_select_fu1, fetch2buff_addr1, simd0_2tracemon_retire_pc1, simd1_2tracemon_retire_pc1,
+      simd2_2tracemon_retire_pc1, simd3_2tracemon_retire_pc1, simf0_2tracemon_retire_pc1,
+      simf1_2tracemon_retire_pc1, simf2_2tracemon_retire_pc1, simf3_2tracemon_retire_pc1,
+      salu2tracemon_retire_pc1, lsu2tracemon_retire_pc1, issue2tracemon_barrier_retire_pc1,
+      issue2tracemon_waitcnt_retire_pc1, salu2fetch_branch_pc_value1, decode2issue_instr_pc1,
+      salu2exec_wr_m0_value1, fetch2buff_tag1, issue2tracemon_barrier_retire_wf_bitmap1, lsu2mem_wr_mask1, salu2exec_wr_exec_value1, salu2exec_wr_vcc_value1,
+      salu2sgpr_dest_data1, simd0_2exec_wr_vcc_value1, simd0_2vgpr_wr_mask1,
+      simd1_2exec_wr_vcc_value1, simd1_2vgpr_wr_mask1, simd2_2exec_wr_vcc_value1,
+      simd2_2vgpr_wr_mask1, simd3_2exec_wr_vcc_value1, simd3_2vgpr_wr_mask1,
+      simf0_2exec_wr_vcc_value1, simf0_2vgpr_wr_mask1, simf1_2exec_wr_vcc_value1,
+      simf1_2vgpr_wr_mask1, simf2_2exec_wr_vcc_value1, simf2_2vgpr_wr_mask1,
+      simf3_2exec_wr_vcc_value1, simf3_2vgpr_wr_mask1, simd0_2sgpr_wr_data1,
+      simd1_2sgpr_wr_data1, simd2_2sgpr_wr_data1, simd3_2sgpr_wr_data1, simf0_2sgpr_wr_data1,
+      simf1_2sgpr_wr_data1, simf2_2sgpr_wr_data1, simf3_2sgpr_wr_data1, lsu2vgpr_dest_wr_mask1,
+      decode2tracemon_collinstr1, lsu2sgpr_dest_data1, lsu2mem_addr1, simd0_2vgpr_dest_data1, simd1_2vgpr_dest_data1,
+      simd2_2vgpr_dest_data1, simd3_2vgpr_dest_data1, simf0_2vgpr_dest_data1,
+      simf1_2vgpr_dest_data1, simf2_2vgpr_dest_data1, simf3_2vgpr_dest_data1,
+      lsu2mem_wr_data1, lsu2vgpr_dest_data1
+};
+assign data2 = {
+      cu2dispatch_wf_done2, lsu2mem_gm_or_lds2, fetch2buff_rd_en2, issue2tracemon_barrier_retire_en2,
+      issue2tracemon_waitcnt_retire_en2, wave2decode_instr_valid2, salu2sgpr_instr_done2,
+      salu2exec_wr_exec_en2, salu2exec_wr_vcc_en2, salu2exec_wr_scc_en2, salu2exec_wr_scc_value2,
+      simd0_2vgpr_instr_done2, simd1_2vgpr_instr_done2, simd2_2vgpr_instr_done2,
+      simd3_2vgpr_instr_done2, simd0_2exec_wr_vcc_en2, simd0_2vgpr_wr_en2, simd1_2exec_wr_vcc_en2,
+      simd1_2vgpr_wr_en2, simd2_2exec_wr_vcc_en2, simd2_2vgpr_wr_en2, simd3_2exec_wr_vcc_en2,
+      simd3_2vgpr_wr_en2, simf0_2vgpr_instr_done2, simf1_2vgpr_instr_done2, simf2_2vgpr_instr_done2,
+      simf3_2vgpr_instr_done2, simf0_2exec_wr_vcc_en2, simf0_2vgpr_wr_en2, simf1_2exec_wr_vcc_en2,
+      simf1_2vgpr_wr_en2, simf2_2exec_wr_vcc_en2, simf2_2vgpr_wr_en2, simf3_2exec_wr_vcc_en2,
+      simf3_2vgpr_wr_en2, simd0_2sgpr_wr_en2, simd1_2sgpr_wr_en2, simd2_2sgpr_wr_en2,
+      simd3_2sgpr_wr_en2, simf0_2sgpr_wr_en2, simf1_2sgpr_wr_en2, simf2_2sgpr_wr_en2,
+      simf3_2sgpr_wr_en2, lsu2sgpr_instr_done2, lsu2vgpr_instr_done2, issue2fetchwave_wf_done_en2,
+      salu2fetchwaveissue_branch_en2, salu2fetchwaveissue_branch_taken2, decode2tracemon_colldone2,
+      decode2issue_valid2, lsu2tracemon_gm_or_lds2, fetch2tracemon_dispatch2,
+      salu2exec_wr_m0_en2, decode2issue_barrier2,salu2tracemon_exec_word_sel2, salu2tracemon_vcc_word_sel2,
+      salu2sgpr_dest_wr_en2,lsu2mem_rd_en2, lsu2sgpr_dest_wr_en2, lsu2vgpr_dest_wr_en2,issue2tracemon_waitcnt_retire_wfid2, wave2decode_wfid2, salu2sgpr_instr_done_wfid2,
+      simd0_2vgpr_instr_done_wfid2, simd1_2vgpr_instr_done_wfid2, simd2_2vgpr_instr_done_wfid2,
+      simd3_2vgpr_instr_done_wfid2, simf0_2vgpr_instr_done_wfid2, simf1_2vgpr_instr_done_wfid2,
+      simf2_2vgpr_instr_done_wfid2, simf3_2vgpr_instr_done_wfid2, lsu2sgpr_instr_done_wfid2,
+      lsu2vgpr_instr_done_wfid2, issue2fetchwave_wf_done_wf_id2, salu2fetchwaveissue_branch_wfid2,
+      decode2issue_wfid2, fetch2tracemon_new_wfid2,lsu2mem_tag_req2,wave2decode_sgpr_base2, salu2sgpr_dest_addr2, simd0_2sgpr_wr_addr2,
+      simd1_2sgpr_wr_addr2, simd2_2sgpr_wr_addr2, simd3_2sgpr_wr_addr2, simf0_2sgpr_wr_addr2,
+      simf1_2sgpr_wr_addr2, simf2_2sgpr_wr_addr2, simf3_2sgpr_wr_addr2, lsu2sgpr_dest_addr2,wave2decode_vgpr_base2, simd0_2vgpr_dest_addr2, simd1_2vgpr_dest_addr2,
+      simd2_2vgpr_dest_addr2, simd3_2vgpr_dest_addr2, simf0_2vgpr_dest_addr2,
+      simf1_2vgpr_dest_addr2, simf2_2vgpr_dest_addr2, simf3_2vgpr_dest_addr2,
+      lsu2vgpr_dest_addr2,cu2dispatch_wf_tag_done2, fetch2tracemon_wf_tag2,wave2decode_lds_base2, rfa2execvgprsgpr_select_fu2,fetch2buff_addr2, simd0_2tracemon_retire_pc2, simd1_2tracemon_retire_pc2,
+      simd2_2tracemon_retire_pc2, simd3_2tracemon_retire_pc2, simf0_2tracemon_retire_pc2,
+      simf1_2tracemon_retire_pc2, simf2_2tracemon_retire_pc2, simf3_2tracemon_retire_pc2,
+      salu2tracemon_retire_pc2, lsu2tracemon_retire_pc2, issue2tracemon_barrier_retire_pc2,
+      issue2tracemon_waitcnt_retire_pc2, salu2fetch_branch_pc_value2, decode2issue_instr_pc2,
+      salu2exec_wr_m0_value2,fetch2buff_tag2,issue2tracemon_barrier_retire_wf_bitmap2,lsu2mem_wr_mask2, salu2exec_wr_exec_value2, salu2exec_wr_vcc_value2,
+      salu2sgpr_dest_data2, simd0_2exec_wr_vcc_value2, simd0_2vgpr_wr_mask2,
+      simd1_2exec_wr_vcc_value2, simd1_2vgpr_wr_mask2, simd2_2exec_wr_vcc_value2,
+      simd2_2vgpr_wr_mask2, simd3_2exec_wr_vcc_value2, simd3_2vgpr_wr_mask2,
+      simf0_2exec_wr_vcc_value2, simf0_2vgpr_wr_mask2, simf1_2exec_wr_vcc_value2,
+      simf1_2vgpr_wr_mask2, simf2_2exec_wr_vcc_value2, simf2_2vgpr_wr_mask2,
+      simf3_2exec_wr_vcc_value2, simf3_2vgpr_wr_mask2, simd0_2sgpr_wr_data2,
+      simd1_2sgpr_wr_data2, simd2_2sgpr_wr_data2, simd3_2sgpr_wr_data2, simf0_2sgpr_wr_data2,
+      simf1_2sgpr_wr_data2, simf2_2sgpr_wr_data2, simf3_2sgpr_wr_data2, lsu2vgpr_dest_wr_mask2,
+      decode2tracemon_collinstr2,lsu2sgpr_dest_data2,lsu2mem_addr2, simd0_2vgpr_dest_data2, simd1_2vgpr_dest_data2,
+      simd2_2vgpr_dest_data2, simd3_2vgpr_dest_data2, simf0_2vgpr_dest_data2,
+      simf1_2vgpr_dest_data2, simf2_2vgpr_dest_data2, simf3_2vgpr_dest_data2,
+      lsu2mem_wr_data2, lsu2vgpr_dest_data2
+      };
+assign data3 = {cu2dispatch_wf_done3, lsu2mem_gm_or_lds3, fetch2buff_rd_en3, issue2tracemon_barrier_retire_en3,
+      issue2tracemon_waitcnt_retire_en3, wave2decode_instr_valid3, salu2sgpr_instr_done3,
+      salu2exec_wr_exec_en3, salu2exec_wr_vcc_en3, salu2exec_wr_scc_en3, salu2exec_wr_scc_value3,
+      simd0_2vgpr_instr_done3, simd1_2vgpr_instr_done3, simd2_2vgpr_instr_done3,
+      simd3_2vgpr_instr_done3, simd0_2exec_wr_vcc_en3, simd0_2vgpr_wr_en3, simd1_2exec_wr_vcc_en3,
+      simd1_2vgpr_wr_en3, simd2_2exec_wr_vcc_en3, simd2_2vgpr_wr_en3, simd3_2exec_wr_vcc_en3,
+      simd3_2vgpr_wr_en3, simf0_2vgpr_instr_done3, simf1_2vgpr_instr_done3, simf2_2vgpr_instr_done3,
+      simf3_2vgpr_instr_done3, simf0_2exec_wr_vcc_en3, simf0_2vgpr_wr_en3, simf1_2exec_wr_vcc_en3,
+      simf1_2vgpr_wr_en3, simf2_2exec_wr_vcc_en3, simf2_2vgpr_wr_en3, simf3_2exec_wr_vcc_en3,
+      simf3_2vgpr_wr_en3, simd0_2sgpr_wr_en3, simd1_2sgpr_wr_en3, simd2_2sgpr_wr_en3,
+      simd3_2sgpr_wr_en3, simf0_2sgpr_wr_en3, simf1_2sgpr_wr_en3, simf2_2sgpr_wr_en3,
+      simf3_2sgpr_wr_en3, lsu2sgpr_instr_done3, lsu2vgpr_instr_done3, issue2fetchwave_wf_done_en3,
+      salu2fetchwaveissue_branch_en3, salu2fetchwaveissue_branch_taken3, decode2tracemon_colldone3,
+      decode2issue_valid3, lsu2tracemon_gm_or_lds3, fetch2tracemon_dispatch3,
+      salu2exec_wr_m0_en3, decode2issue_barrier3,salu2tracemon_exec_word_sel3, salu2tracemon_vcc_word_sel3,
+      salu2sgpr_dest_wr_en3,lsu2mem_rd_en3, lsu2sgpr_dest_wr_en3, lsu2vgpr_dest_wr_en3,issue2tracemon_waitcnt_retire_wfid3, wave2decode_wfid3, salu2sgpr_instr_done_wfid3,
+      simd0_2vgpr_instr_done_wfid3, simd1_2vgpr_instr_done_wfid3, simd2_2vgpr_instr_done_wfid3,
+      simd3_2vgpr_instr_done_wfid3, simf0_2vgpr_instr_done_wfid3, simf1_2vgpr_instr_done_wfid3,
+      simf2_2vgpr_instr_done_wfid3, simf3_2vgpr_instr_done_wfid3, lsu2sgpr_instr_done_wfid3,
+      lsu2vgpr_instr_done_wfid3, issue2fetchwave_wf_done_wf_id3, salu2fetchwaveissue_branch_wfid3,
+      decode2issue_wfid3, fetch2tracemon_new_wfid3,lsu2mem_tag_req3,wave2decode_sgpr_base3, salu2sgpr_dest_addr3, simd0_2sgpr_wr_addr3,
+      simd1_2sgpr_wr_addr3, simd2_2sgpr_wr_addr3, simd3_2sgpr_wr_addr3, simf0_2sgpr_wr_addr3,
+      simf1_2sgpr_wr_addr3, simf2_2sgpr_wr_addr3, simf3_2sgpr_wr_addr3, lsu2sgpr_dest_addr3,wave2decode_vgpr_base3, simd0_2vgpr_dest_addr3, simd1_2vgpr_dest_addr3,
+      simd2_2vgpr_dest_addr3, simd3_2vgpr_dest_addr3, simf0_2vgpr_dest_addr3,
+      simf1_2vgpr_dest_addr3, simf2_2vgpr_dest_addr3, simf3_2vgpr_dest_addr3,
+      lsu2vgpr_dest_addr3,cu2dispatch_wf_tag_done3, fetch2tracemon_wf_tag3,wave2decode_lds_base3, rfa2execvgprsgpr_select_fu3,fetch2buff_addr3, simd0_2tracemon_retire_pc3, simd1_2tracemon_retire_pc3,
+      simd2_2tracemon_retire_pc3, simd3_2tracemon_retire_pc3, simf0_2tracemon_retire_pc3,
+      simf1_2tracemon_retire_pc3, simf2_2tracemon_retire_pc3, simf3_2tracemon_retire_pc3,
+      salu2tracemon_retire_pc3, lsu2tracemon_retire_pc3, issue2tracemon_barrier_retire_pc3,
+      issue2tracemon_waitcnt_retire_pc3, salu2fetch_branch_pc_value3, decode2issue_instr_pc3,
+      salu2exec_wr_m0_value3,fetch2buff_tag3,issue2tracemon_barrier_retire_wf_bitmap3,lsu2mem_wr_mask3, salu2exec_wr_exec_value3, salu2exec_wr_vcc_value3,
+      salu2sgpr_dest_data3, simd0_2exec_wr_vcc_value3, simd0_2vgpr_wr_mask3,
+      simd1_2exec_wr_vcc_value3, simd1_2vgpr_wr_mask3, simd2_2exec_wr_vcc_value3,
+      simd2_2vgpr_wr_mask3, simd3_2exec_wr_vcc_value3, simd3_2vgpr_wr_mask3,
+      simf0_2exec_wr_vcc_value3, simf0_2vgpr_wr_mask3, simf1_2exec_wr_vcc_value3,
+      simf1_2vgpr_wr_mask3, simf2_2exec_wr_vcc_value3, simf2_2vgpr_wr_mask3,
+      simf3_2exec_wr_vcc_value3, simf3_2vgpr_wr_mask3, simd0_2sgpr_wr_data3,
+      simd1_2sgpr_wr_data3, simd2_2sgpr_wr_data3, simd3_2sgpr_wr_data3, simf0_2sgpr_wr_data3,
+      simf1_2sgpr_wr_data3, simf2_2sgpr_wr_data3, simf3_2sgpr_wr_data3, lsu2vgpr_dest_wr_mask3,
+      decode2tracemon_collinstr3,lsu2sgpr_dest_data3,lsu2mem_addr3, simd0_2vgpr_dest_data3, simd1_2vgpr_dest_data3,
+      simd2_2vgpr_dest_data3, simd3_2vgpr_dest_data3, simf0_2vgpr_dest_data3,
+      simf1_2vgpr_dest_data3, simf2_2vgpr_dest_data3, simf3_2vgpr_dest_data3;
+      lsu2mem_wr_data3, lsu2vgpr_dest_data3
+};   
+   //1 bit       
+assign cu2dispatch_wf_done = out_data [0];
+assign lsu2mem_gm_or_lds = out_data [1];
+assign fetch2buff_rd_en = out_data [2];
+assign issue2tracemon_barrier_retire_en = out_data [3];
+assign issue2tracemon_waitcnt_retire_en = out_data [4];
+assign wave2decode_instr_valid = out_data [5];
+assign salu2sgpr_instr_done = out_data [6];
+assign salu2exec_wr_exec_en = out_data [7];
+assign salu2exec_wr_vcc_en = out_data [8];
+assign salu2exec_wr_scc_en = out_data [9];
+assign salu2exec_wr_scc_value = out_data [10];
+assign simd0_2vgpr_instr_done = out_data [11];
+assign simd1_2vgpr_instr_done = out_data [12];
+assign simd2_2vgpr_instr_done = out_data [13];
+assign simd3_2vgpr_instr_done = out_data [14];
+assign simd0_2exec_wr_vcc_en = out_data [15];
+assign simd0_2vgpr_wr_en = out_data [16];
+assign simd1_2exec_wr_vcc_en = out_data [17];
+assign simd1_2vgpr_wr_en = out_data [18];
+assign simd2_2exec_wr_vcc_en = out_data [19];
+assign simd2_2vgpr_wr_en = out_data [20];
+assign simd3_2exec_wr_vcc_en = out_data [21];
+assign simd3_2vgpr_wr_en = out_data [22];
+assign simf0_2vgpr_instr_done = out_data [23];
+assign simf1_2vgpr_instr_done = out_data [24];
+assign simf2_2vgpr_instr_done = out_data [25];
+assign simf3_2vgpr_instr_done = out_data [26];
+assign simf0_2exec_wr_vcc_en = out_data [27];
+assign simf0_2vgpr_wr_en = out_data [28];
+assign simf1_2exec_wr_vcc_en = out_data [29];
+assign simf1_2vgpr_wr_en = out_data [30];
+assign simf2_2exec_wr_vcc_en = out_data [31];
+assign simf2_2vgpr_wr_en = out_data [32];
+assign simf3_2exec_wr_vcc_en = out_data [33];
+assign simf3_2vgpr_wr_en = out_data [34];
+assign simd0_2sgpr_wr_en = out_data [35];
+assign simd1_2sgpr_wr_en = out_data [36];
+assign simd2_2sgpr_wr_en = out_data [37];
+assign simd3_2sgpr_wr_en = out_data [38];
+assign simf0_2sgpr_wr_en = out_data [39];
+assign simf1_2sgpr_wr_en = out_data [40];
+assign simf2_2sgpr_wr_en = out_data [41];
+assign simf3_2sgpr_wr_en = out_data [42];
+assign lsu2sgpr_instr_done = out_data [43];
+assign lsu2vgpr_instr_done = out_data [44];
+assign issue2fetchwave_wf_done_en = out_data [45];
+assign salu2fetchwaveissue_branch_en = out_data [46];
+assign salu2fetchwaveissue_branch_taken = out_data [47];
+assign decode2tracemon_colldone = out_data [48];
+assign decode2issue_valid = out_data [49];
+assign lsu2tracemon_gm_or_lds = out_data [50];
+assign fetch2tracemon_dispatch = out_data [51];
+assign salu2exec_wr_m0_en = out_data [52];
+assign decode2issue_barrier = out_data [53];
+
+//2 bits
+assign salu2tracemon_exec_word_sel = out_data [55:54];
+assign salu2tracemon_vcc_word_sel = out_data [57:56];
+assign salu2sgpr_dest_wr_en3 = out_data [59:58];
+
+//4 bits
+assign lsu2mem_rd_en = out_data [63:60];
+assign lsu2sgpr_dest_wr_en = out_data [67:64];
+assign lsu2vgpr_dest_wr_en = out_data [71:68];
+
+//6 bits
+assign issue2tracemon_waitcnt_retire_wfid = out_data [77:72];
+
+//9 bits
+assign wave2decode_wfid = out_data [86:78];
+assign salu2sgpr_instr_done_wfid = out_data [95:87];
+assign simd0_2vgpr_instr_done_wfid = out_data [104:96];
+assign simd1_2vgpr_instr_done_wfid = out_data [113:105];
+assign simd2_2vgpr_instr_done_wfid = out_data [122:114];
+assign simd3_2vgpr_instr_done_wfid = out_data [131:123];
+assign simf0_2vgpr_instr_done_wfid = out_data [140:132];
+assign simf1_2vgpr_instr_done_wfid = out_data [149:141];
+assign simf2_2vgpr_instr_done_wfid = out_data [158:150];
+assign simf3_2vgpr_instr_done_wfid = out_data [167:159];
+assign lsu2sgpr_instr_done_wfid = out_data [176:168];
+assign lsu2vgpr_instr_done_wfid = out_data [185:177];
+assign issue2fetchwave_wf_done_wf_id = out_data [194:186];
+assign salu2fetchwaveissue_branch_wfid = out_data [203:195];
+assign decode2issue_wfid = out_data [212:204];
+assign fetch2tracemon_new_wfid = out_data [221:213];
+
+//7 bits
+assign lsu2mem_tag_req3 = out_data [228:222];
+assign wave2decode_sgpr_base = out_data [235:229];
+
+//9 bits
+assign salu2sgpr_dest_addr = out_data [244:236];
+assign simd0_2sgpr_wr_addr = out_data [253:245];
+assign simd1_2sgpr_wr_addr = out_data [262:254];
+assign simd2_2sgpr_wr_addr = out_data [271:263];
+assign simd3_2sgpr_wr_addr = out_data [280:272];
+assign simf0_2sgpr_wr_addr = out_data [289:281];
+assign simf1_2sgpr_wr_addr = out_data [298:290];
+assign simf2_2sgpr_wr_addr = out_data [307:299];
+assign simf3_2sgpr_wr_addr = out_data [316:308];
+assign lsu2sgpr_dest_addr = out_data [325:317];
+
+//10 bits
+assign wave2decode_vgpr_base = out_data [335:326];
+assign simd0_2vgpr_dest_addr = out_data [345:336];
+assign simd1_2vgpr_dest_addr = out_data [355:346];
+assign simd2_2vgpr_dest_addr = out_data [365:356];
+assign simd3_2vgpr_dest_addr = out_data [375:366];
+assign simf0_2vgpr_dest_addr = out_data [385:376];
+assign simf1_2vgpr_dest_addr = out_data [395:386];
+assign simf2_2vgpr_dest_addr = out_data [405:396];
+assign simf3_2vgpr_dest_addr = out_data [415:406];
+assign lsu2vgpr_dest_addr = out_data [425:416];
+
+//15 bits
+assign cu2dispatch_wf_tag_done = out_data [440:426];
+assign fetch2tracemon_wf_tag = out_data [455:441];
+
+//16 bits
+assign wave2decode_lds_base = out_data [471:456];
+assign rfa2execvgprsgpr_select_fu = out_data [487:472];
+
+//32 bits
+assign fetch2buff_addr = out_data [519:488];
+assign simd0_2tracemon_retire_pc = out_data [551:520];
+assign simd1_2tracemon_retire_pc = out_data [583:552];
+assign simd2_2tracemon_retire_pc = out_data [615:584];
+assign simd3_2tracemon_retire_pc = out_data [647:616];
+assign simf0_2tracemon_retire_pc = out_data [679:648];
+assign simf1_2tracemon_retire_pc = out_data [711:680];
+assign simf2_2tracemon_retire_pc = out_data [743:712];
+assign simf3_2tracemon_retire_pc = out_data [775:744];
+assign salu2tracemon_retire_pc = out_data [807:776];
+assign lsu2tracemon_retire_pc = out_data [839:808];
+assign issue2tracemon_barrier_retire_pc = out_data [871:840];
+assign issue2tracemon_waitcnt_retire_pc = out_data [903:872];
+assign salu2fetch_branch_pc_value = out_data [935:904];
+assign decode2issue_instr_pc = out_data [967:936];
+assign salu2exec_wr_m0_value = out_data [999:968];
+
+//39 bits
+assign fetch2buff_tag = out_data [1038:1000];
+
+//40 bits
+assign issue2tracemon_barrier_retire_wf_bitmap = out_data [1078:1039];
+
+//64 bits
+assign lsu2mem_wr_mask = out_data [1142:1079];
+assign salu2exec_wr_exec_value = out_data [1206:1143];
+assign salu2exec_wr_vcc_value = out_data [1270:1207];
+assign salu2sgpr_dest_data = out_data [1334:1271];
+assign simd0_2exec_wr_vcc_value = out_data [1398:1335];
+assign simd0_2vgpr_wr_mask = out_data [1462:1399];
+assign simd1_2exec_wr_vcc_value = out_data [1526:1463];
+assign simd1_2vgpr_wr_mask = out_data [1590:1527];
+assign simd2_2exec_wr_vcc_value = out_data [1654:1591];
+assign simd2_2vgpr_wr_mask = out_data [1718:1655];
+assign simd3_2exec_wr_vcc_value = out_data [1782:1719];
+assign simd3_2vgpr_wr_mask = out_data [1846:1783];
+assign simf0_2exec_wr_vcc_value = out_data [1910:1847];
+assign simf0_2vgpr_wr_mask = out_data [1974:1911];
+assign simf1_2exec_wr_vcc_value = out_data [2038:1975];
+assign simf1_2vgpr_wr_mask = out_data [2102:2039];
+assign simf2_2exec_wr_vcc_value = out_data [2166:2103];
+assign simf2_2vgpr_wr_mask = out_data [2230:2167];
+assign simf3_2exec_wr_vcc_value = out_data [2294:2231];
+assign simf3_2vgpr_wr_mask = out_data [2358:2295];
+assign simd0_2sgpr_wr_data = out_data [2422:2359];
+assign simd1_2sgpr_wr_data = out_data [2486:2423];
+assign simd2_2sgpr_wr_data = out_data [2550:2487];
+assign simd3_2sgpr_wr_data = out_data [2614:2551];
+assign simf0_2sgpr_wr_data = out_data [2678:2615];
+assign simf1_2sgpr_wr_data = out_data [2742:2679];
+assign simf2_2sgpr_wr_data = out_data [2806:2743];
+assign simf3_2sgpr_wr_data = out_data [2870:2807];
+assign lsu2vgpr_dest_wr_mask = out_data [2934:2871];
+assign decode2tracemon_collinstr = out_data [2998:2935];
+
+//128 bits
+assign lsu2sgpr_dest_data = out_data [3126:2999];
+
+//2048 bits
+assign lsu2mem_addr = out_data [5174:3127];
+assign simd0_2vgpr_dest_data = out_data [7222:5175];
+assign simd1_2vgpr_dest_data = out_data [9270:7223];
+assign simd2_2vgpr_dest_data = out_data [11318:9271];
+assign simd3_2vgpr_dest_data = out_data [13366:11319];
+assign simf0_2vgpr_dest_data = out_data [15414:13367];
+assign simf1_2vgpr_dest_data = out_data [17462:15415];
+assign simf2_2vgpr_dest_data = out_data [19510:17463];
+assign simf3_2vgpr_dest_data = out_data [21558:19511];
+
+// 8192 bits
+assign lsu2mem_wr_data = out_data [29750:21559];
+assign lsu2vgpr_dest_data = out_data [37942:29751];
+
+
+module round_robin_arbiter #(
+    parameter DATA_WIDTH = 37942
+)(
+    input  wire                   clk,
+    input  wire                   reset,
+    // Sinais de entrada que, quando ativos, indicam que há novo dado a ser enfileirado
+    input  wire                   lsu2mem_wr_en0,
+    input  wire                   lsu2mem_wr_en1,
+    input  wire                   lsu2mem_wr_en2,
+    input  wire                   lsu2mem_wr_en3,
+    input  wire [DATA_WIDTH-1:0]  data0,
+    input  wire [DATA_WIDTH-1:0]  data1,
+    input  wire [DATA_WIDTH-1:0]  data2,
+    input  wire [DATA_WIDTH-1:0]  data3,
+    // Saída do arbiter
+    output reg                    out_valid,
+    output reg [DATA_WIDTH-1:0]   out_data,
+    // Sinais que indicam se o FIFO de cada canal está cheio
+    output wire                   mem2lsu_ack0,
+    output wire                   mem2lsu_ack1,
+    output wire                   mem2lsu_ack2,
+    output wire                   mem2lsu_ack3
+);
+
+    //******************************************************************
+    // Declaração dos FIFOs – cada FIFO tem 4 posições (níveis)
+    //******************************************************************
+    // FIFO 0
+    reg [DATA_WIDTH-1:0] fifo0_mem [0:3];
+    reg [1:0] fifo0_wr_ptr;
+    reg [1:0] fifo0_rd_ptr;
+    reg [2:0] fifo0_count;  // vai de 0 a 4
+
+    // FIFO 1
+    reg [DATA_WIDTH-1:0] fifo1_mem [0:3];
+    reg [1:0] fifo1_wr_ptr;
+    reg [1:0] fifo1_rd_ptr;
+    reg [2:0] fifo1_count;
+
+    // FIFO 2
+    reg [DATA_WIDTH-1:0] fifo2_mem [0:3];
+    reg [1:0] fifo2_wr_ptr;
+    reg [1:0] fifo2_rd_ptr;
+    reg [2:0] fifo2_count;
+
+    // FIFO 3
+    reg [DATA_WIDTH-1:0] fifo3_mem [0:3];
+    reg [1:0] fifo3_wr_ptr;
+    reg [1:0] fifo3_rd_ptr;
+    reg [2:0] fifo3_count;
+
+    // Sinais que indicam se o FIFO possui pelo menos um dado (não está vazio)
+    wire fifo0_valid = (fifo0_count > 0);
+    wire fifo1_valid = (fifo1_count > 0);
+    wire fifo2_valid = (fifo2_count > 0);
+    wire fifo3_valid = (fifo3_count > 0);
+
+    // Sinais de push para cada FIFO: quando a entrada está válida e o FIFO não está cheio
+    wire push0 = valid0 && (fifo0_count < 4);
+    wire push1 = valid1 && (fifo1_count < 4);
+    wire push2 = valid2 && (fifo2_count < 4);
+    wire push3 = valid3 && (fifo3_count < 4);
+
+    //******************************************************************
+    // Saídas que indicam se o FIFO está cheio
+    //******************************************************************
+    assign fifo0_full = (fifo0_count == 4);
+    assign fifo1_full = (fifo1_count == 4);
+    assign fifo2_full = (fifo2_count == 4);
+    assign fifo3_full = (fifo3_count == 4);
+
+    //******************************************************************
+    // Arbiter Round-Robin
+    //******************************************************************
+    // last_index guarda o último canal (FIFO) atendido; 
+    // next_index será o canal selecionado para atender (desenfileirar)
+    reg [1:0] last_index;
+    reg [1:0] next_index;
+    reg       selected_valid;  // indica se foi encontrada uma entrada válida (FIFO não vazia)
+
+    // Para indicar qual FIFO será desenfileirado:
+    // os sinais popX são gerados quando o arbiter seleciona o respectivo canal
+    wire pop0 = selected_valid && (next_index == 2'b00);
+    wire pop1 = selected_valid && (next_index == 2'b01);
+    wire pop2 = selected_valid && (next_index == 2'b10);
+    wire pop3 = selected_valid && (next_index == 2'b11);
+
+    // Lógica combinacional: pesquisa, em ordem round-robin, qual FIFO (canal) possui
+    // dados disponíveis. A pesquisa inicia a partir do canal seguinte ao last_index.
+    always @(*) begin
+        selected_valid = 1'b0;
+        next_index     = last_index; // valor padrão
+        case (last_index)
+            2'b00: begin
+                if (fifo1_valid) begin
+                    next_index     = 2'b01;
+                    selected_valid = 1'b1;
+                end else if (fifo2_valid) begin
+                    next_index     = 2'b10;
+                    selected_valid = 1'b1;
+                end else if (fifo3_valid) begin
+                    next_index     = 2'b11;
+                    selected_valid = 1'b1;
+                end else if (fifo0_valid) begin
+                    next_index     = 2'b00;
+                    selected_valid = 1'b1;
+                end
+            end
+            2'b01: begin
+                if (fifo2_valid) begin
+                    next_index     = 2'b10;
+                    selected_valid = 1'b1;
+                end else if (fifo3_valid) begin
+                    next_index     = 2'b11;
+                    selected_valid = 1'b1;
+                end else if (fifo0_valid) begin
+                    next_index     = 2'b00;
+                    selected_valid = 1'b1;
+                end else if (fifo1_valid) begin
+                    next_index     = 2'b01;
+                    selected_valid = 1'b1;
+                end
+            end
+            2'b10: begin
+                if (fifo3_valid) begin
+                    next_index     = 2'b11;
+                    selected_valid = 1'b1;
+                end else if (fifo0_valid) begin
+                    next_index     = 2'b00;
+                    selected_valid = 1'b1;
+                end else if (fifo1_valid) begin
+                    next_index     = 2'b01;
+                    selected_valid = 1'b1;
+                end else if (fifo2_valid) begin
+                    next_index     = 2'b10;
+                    selected_valid = 1'b1;
+                end
+            end
+            2'b11: begin
+                if (fifo0_valid) begin
+                    next_index     = 2'b00;
+                    selected_valid = 1'b1;
+                end else if (fifo1_valid) begin
+                    next_index     = 2'b01;
+                    selected_valid = 1'b1;
+                end else if (fifo2_valid) begin
+                    next_index     = 2'b10;
+                    selected_valid = 1'b1;
+                end else if (fifo3_valid) begin
+                    next_index     = 2'b11;
+                    selected_valid = 1'b1;
+                end
+            end
+        endcase
+    end
+
+    // Lógica sequencial do arbiter: atualiza o last_index e gera a saída (out_data)
+    // a partir do dado lido do FIFO selecionado.
+    // Note que o dado lido é o conteúdo apontado pelo respectivo rd_ptr.
+    always @(posedge clk or posedge reset) begin
+            if (selected_valid) begin
+                last_index <= next_index;
+                out_valid  <= 1'b1;
+                case (next_index)
+                    2'b00: out_data <= fifo0_mem[fifo0_rd_ptr];
+                    2'b01: out_data <= fifo1_mem[fifo1_rd_ptr];
+                    2'b10: out_data <= fifo2_mem[fifo2_rd_ptr];
+                    2'b11: out_data <= fifo3_mem[fifo3_rd_ptr];
+                endcase
+            end else begin
+                out_valid <= 1'b0;
+            end
+        end
+    end
+
+    //******************************************************************
+    // Lógica dos FIFOs – para cada canal: operação de push (inserir) e pop (retirar)
+    // Para evitar múltiplas atribuições à mesma variável (como fifoX_count),
+    // as atualizações de count são feitas em uma única atribuição.
+    //******************************************************************
+
+    // FIFO 0
+    wire do_pop0 = pop0 && (fifo0_count > 0);
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            fifo0_count   <= 0;
+            fifo0_wr_ptr  <= 0;
+            fifo0_rd_ptr  <= 0;
+        end else begin
+            // Se push (inserção) for permitido, insere o dado e atualiza o ponteiro de escrita
+            if (push0) begin
+                fifo0_mem[fifo0_wr_ptr] <= data0;
+                fifo0_wr_ptr <= fifo0_wr_ptr + 1;
+            end
+            // Se pop (remoção) for solicitado, atualiza o ponteiro de leitura
+            if (do_pop0) begin
+                fifo0_rd_ptr <= fifo0_rd_ptr + 1;
+            end
+            // Atualiza o contador de itens do FIFO: soma 1 se inseriu e subtrai 1 se removeu
+            fifo0_count <= fifo0_count + (push0 ? 1 : 0) - (do_pop0 ? 1 : 0);
+        end
+    end
+
+    // FIFO 1
+    wire do_pop1 = pop1 && (fifo1_count > 0);
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            fifo1_count   <= 0;
+            fifo1_wr_ptr  <= 0;
+            fifo1_rd_ptr  <= 0;
+        end else begin
+            if (push1) begin
+                fifo1_mem[fifo1_wr_ptr] <= data1;
+                fifo1_wr_ptr <= fifo1_wr_ptr + 1;
+            end
+            if (do_pop1) begin
+                fifo1_rd_ptr <= fifo1_rd_ptr + 1;
+            end
+            fifo1_count <= fifo1_count + (push1 ? 1 : 0) - (do_pop1 ? 1 : 0);
+        end
+    end
+
+    // FIFO 2
+    wire do_pop2 = pop2 && (fifo2_count > 0);
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            fifo2_count   <= 0;
+            fifo2_wr_ptr  <= 0;
+            fifo2_rd_ptr  <= 0;
+        end else begin
+            if (push2) begin
+                fifo2_mem[fifo2_wr_ptr] <= data2;
+                fifo2_wr_ptr <= fifo2_wr_ptr + 1;
+            end
+            if (do_pop2) begin
+                fifo2_rd_ptr <= fifo2_rd_ptr + 1;
+            end
+            fifo2_count <= fifo2_count + (push2 ? 1 : 0) - (do_pop2 ? 1 : 0);
+        end
+    end
+
+    // FIFO 3
+    wire do_pop3 = pop3 && (fifo3_count > 0);
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            fifo3_count   <= 0;
+            fifo3_wr_ptr  <= 0;
+            fifo3_rd_ptr  <= 0;
+        end else begin
+            if (push3) begin
+                fifo3_mem[fifo3_wr_ptr] <= data3;
+                fifo3_wr_ptr <= fifo3_wr_ptr + 1;
+            end
+            if (do_pop3) begin
+                fifo3_rd_ptr <= fifo3_rd_ptr + 1;
+            end
+            fifo3_count <= fifo3_count + (push3 ? 1 : 0) - (do_pop3 ? 1 : 0);
+        end
+    end
+
+endmodule
